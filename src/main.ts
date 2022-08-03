@@ -1,4 +1,4 @@
-import { battery, cpuCurrentSpeed, cpuTemperature, currentLoad, mem, networkStats } from "systeminformation";
+import { battery, cpuCurrentSpeed, cpuTemperature, currentLoad, fsSize, mem, networkStats } from "systeminformation";
 import { ExtensionContext, window } from "vscode";
 
 const intervalIds: NodeJS.Timer[] = [];
@@ -11,6 +11,7 @@ export const activate = async ({ subscriptions: sub }: ExtensionContext) => {
   sub.push(await newSBI({ fn: async () => `$(server) ${formatBytes((await mem()).active)}`, tooltip: "Memory usage" }));
   sub.push(await newSBI({ fn: async () => `$(arrow-small-down) ${formatBytes((await networkStats())[0]?.rx_sec ?? 0)}`, tooltip: "Network download" }));
   sub.push(await newSBI({ fn: async () => `$(arrow-small-up) ${formatBytes((await networkStats())[0]?.tx_sec ?? 0)}`, tooltip: "Network upload" }));
+  sub.push(await newSBI({ fn: async () => `$(database) ${formatBytes((await fsSize()).reduce((acc, cur) => acc + cur.used, 0))}`, tooltip: "Filesystem usage" }));
 };
 
 export const deactivate = () => intervalIds.forEach((id) => clearInterval(id));
@@ -29,7 +30,7 @@ const formatBytes = (bytes: number, decimals = 2) => {
   if (bytes === 0) return "0b";
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["b", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  const sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))}${sizes[i]}`;
 };
