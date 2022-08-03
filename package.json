@@ -13,14 +13,6 @@
     "*"
   ],
   "main": "./out/main.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "resource-monitor.helloWorld",
-        "title": "Hello World"
-      }
-    ]
-  },
   "scripts": {
     "watch": "tsc --project . --watch"
   },
@@ -31,5 +23,8 @@
   },
   "prettier": {
     "printWidth": 999999
+  },
+  "dependencies": {
+    "systeminformation": "^5.12.2"
   }
 }
