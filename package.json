@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:resource-monitor.helloWorld"
+    "*"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -22,16 +22,14 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "update": "npm exec --yes npm-check-updates@latest -- --upgrade --target=minor && npm update",
-    "format": "npm exec prettier -- --write . --ignore-path .gitignore",
-    "check": "tsc --noEmit --skipLibCheck"
+    "watch": "tsc --project . --watch"
   },
   "devDependencies": {
-    "@types/vscode": "^1.69.0",
     "@types/node": "16.x",
+    "@types/vscode": "^1.69.0",
     "typescript": "^4.7.4"
+  },
+  "prettier": {
+    "printWidth": 999999
   }
 }
