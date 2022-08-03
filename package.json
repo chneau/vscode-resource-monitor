@@ -14,6 +14,7 @@
   ],
   "main": "./out/main.js",
   "scripts": {
+    "build": "tsc --project .",
     "watch": "tsc --project . --watch"
   },
   "devDependencies": {
