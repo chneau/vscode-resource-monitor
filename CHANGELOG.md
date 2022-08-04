@@ -10,6 +10,14 @@ http://keepachangelog.com/
 
 ## [Unreleased]
 
+## [0.0.4] - 2022-08-05
+
+### Added
+
+- Images in the `README.md`.
+- An extension icon.
+- A description in the `package.json`.
+
 ## [0.0.3] - 2022-08-04
 
 ### Changed

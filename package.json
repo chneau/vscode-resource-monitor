@@ -1,10 +1,11 @@
 {
   "name": "resource-monitor",
   "displayName": "Resource Monitor",
-  "description": "",
-  "version": "0.0.3",
+  "description": "A simple resource monitor.",
+  "version": "0.0.4",
   "publisher": "chneau",
   "repository": "https://github.com/chneau/vscode-resource-monitor",
+  "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.69.0"
   },
@@ -18,7 +19,7 @@
   "scripts": {
     "esbuild-base": "esbuild ./src/main.ts --outfile=out/main.js",
     "build": "npm run esbuild-base -- --bundle --external:vscode --platform=node --minify",
-    "watch": "npm run esbuild-base -- --watch"
+    "watch": "npm run esbuild-base -- --format=cjs --watch"
   },
   "devDependencies": {
     "@types/node": "16.x",

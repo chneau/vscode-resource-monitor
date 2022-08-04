@@ -1,7 +1,9 @@
 # resource-monitor
 
-## Dev log
+A simple resource monitor.
 
-```bash
-# Go to https://dev.azure.com/chneau/_usersSettings/tokens
-```
+![example](images/bar.png)
+
+You can easily disable some monitors via the context menu.
+
+![example](images/menu.png)
