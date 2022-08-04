@@ -10,6 +10,12 @@ http://keepachangelog.com/
 
 ## [Unreleased]
 
+## [0.0.3] - 2022-08-04
+
+### Changed
+
+- Using `esbuild` to build a lighter extension.
+
 ## [0.0.2] - 2022-08-04
 
 ### Fixed
