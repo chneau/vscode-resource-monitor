@@ -1,14 +1,5 @@
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Version change type"
-        type: choice
-        required: true
-        options:
-          - patch
-          - minor
-          - major
 
 jobs:
   build-and-deploy:
@@ -18,5 +9,4 @@ jobs:
       - run: npm install -g vsce
       - run: npm install
       - run: npm run build
-      - run: vsce publish ${{ inputs.version }} --pat ${{ secrets.PAT }}
-      - run: git push
+      - run: vsce publish --pat ${{ secrets.PAT }}
