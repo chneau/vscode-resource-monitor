@@ -4,7 +4,10 @@
   "description": "A simple resource monitor.",
   "version": "0.0.4",
   "publisher": "chneau",
-  "repository": "https://github.com/chneau/vscode-resource-monitor",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chneau/vscode-resource-monitor"
+  },
   "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.69.0"
