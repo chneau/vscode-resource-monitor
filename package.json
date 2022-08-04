@@ -2,9 +2,9 @@
   "name": "resource-monitor",
   "displayName": "Resource Monitor",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "chneau",
-  "repository": "https://github.com/chneau/vscode-saturated-dark-plus",
+  "repository": "https://github.com/chneau/vscode-resource-monitor",
   "engines": {
     "vscode": "^1.69.0"
   },

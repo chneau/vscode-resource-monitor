@@ -10,6 +10,12 @@ http://keepachangelog.com/
 
 ## [Unreleased]
 
+## [0.0.2] - 2022-08-04
+
+### Fixed
+
+- Changed repository URL on `package.json`
+
 ## [0.0.1] - 2022-08-04
 
 ### Added
