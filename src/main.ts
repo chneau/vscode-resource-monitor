@@ -4,7 +4,7 @@ import { ExtensionContext, StatusBarAlignment, window } from "vscode";
 const intervalIds: NodeJS.Timer[] = [];
 
 export const activate = async ({ subscriptions: sub }: ExtensionContext) => {
-  let priority = 10;
+  let priority = -1000;
   sub.push(newSBI({ fn: cpuTemperature, text: (x) => `$(flame)${x.main?.toFixed(2) ?? -1}C`, name: "CPU temperature", priority: priority-- }));
   sub.push(newSBI({ fn: battery, text: (x) => `$(plug)${x.percent ?? -1}%`, name: "Battery charge", priority: priority-- }));
   sub.push(newSBI({ fn: cpuCurrentSpeed, text: (x) => `$(dashboard)${x.avg.toFixed(2)}GHz`, name: "CPU speed", priority: priority-- }));
@@ -41,5 +41,5 @@ const formatBytes = (bytes: number, decimals = 2) => {
   const dm = decimals < 0 ? 0 : decimals;
   const sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))}${sizes[i]}`;
+  return `${(bytes / Math.pow(k, i)).toFixed(dm)}${sizes[i]}`;
 };
