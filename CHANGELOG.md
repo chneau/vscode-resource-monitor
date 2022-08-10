@@ -10,6 +10,12 @@ http://keepachangelog.com/
 
 ## [Unreleased]
 
+## [0.0.5] - 2022-08-11
+
+### Fixed
+
+- Fix windows high cpu usage.
+
 ## [0.0.4] - 2022-08-05
 
 ### Added

@@ -1,9 +1,10 @@
-import { battery, cpuCurrentSpeed, cpuTemperature, currentLoad, fsSize, mem, networkStats } from "systeminformation";
+import { battery, cpuCurrentSpeed, cpuTemperature, currentLoad, fsSize, mem, networkStats, powerShellRelease, powerShellStart } from "systeminformation";
 import { ExtensionContext, StatusBarAlignment, window } from "vscode";
 
 const intervalIds: NodeJS.Timer[] = [];
 
 export const activate = async ({ subscriptions: sub }: ExtensionContext) => {
+  if (process.platform === "win32") powerShellStart();
   let priority = -1000;
   sub.push(newSBI({ fn: cpuTemperature, text: (x) => `$(flame)${x.main?.toFixed(2) ?? -1}C`, name: "CPU temperature", priority: priority-- }));
   sub.push(newSBI({ fn: battery, text: (x) => `$(plug)${x.percent ?? -1}%`, name: "Battery charge", priority: priority-- }));
@@ -14,7 +15,10 @@ export const activate = async ({ subscriptions: sub }: ExtensionContext) => {
   sub.push(newSBI({ fn: fsSize, text: (x) => `$(database)${formatBytes(x.reduce((acc, cur) => acc + cur.used, 0))}`, name: "Filesystem usage", priority: priority }));
 };
 
-export const deactivate = () => intervalIds.forEach((id) => clearInterval(id));
+export const deactivate = () => {
+  if (process.platform === "win32") powerShellRelease();
+  intervalIds.forEach((id) => clearInterval(id));
+};
 
 interface NewSBIProps<T> {
   fn: () => Promise<T>;

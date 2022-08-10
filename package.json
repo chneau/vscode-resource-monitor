@@ -2,7 +2,7 @@
   "name": "resource-monitor",
   "displayName": "Resource Monitor",
   "description": "A simple resource monitor.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "chneau",
   "repository": {
     "type": "git",
