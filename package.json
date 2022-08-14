@@ -27,13 +27,13 @@
   "devDependencies": {
     "@types/node": "16.x",
     "@types/vscode": "^1.70.0",
-    "esbuild": "^0.15.0",
+    "esbuild": "^0.15.3",
     "typescript": "^4.7.4"
   },
   "prettier": {
     "printWidth": 999999
   },
   "dependencies": {
-    "systeminformation": "^5.12.4"
+    "systeminformation": "^5.12.5"
   }
 }
