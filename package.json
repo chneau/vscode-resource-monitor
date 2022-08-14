@@ -2,8 +2,25 @@
   "name": "resource-monitor",
   "displayName": "Resource Monitor",
   "description": "A simple resource monitor.",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "publisher": "chneau",
+  "license": "MIT",
+  "galleryBanner": {
+    "color": "#1E1E1E",
+    "theme": "dark"
+  },
+  "keywords": [
+    "performance",
+    "resource",
+    "resources",
+    "monitor",
+    "memory",
+    "cpu",
+    "io",
+    "network",
+    "disk",
+    "storage"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/chneau/vscode-resource-monitor"
