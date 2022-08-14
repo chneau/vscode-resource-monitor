@@ -9,4 +9,4 @@ jobs:
       - run: npm install -g vsce
       - run: npm install
       - run: npm run build
-      - run: vsce publish --pat ${{ secrets.PAT }}
+      - run: vsce publish --pat ${{ secrets.AZURE_DEVOPS_PAT }}
