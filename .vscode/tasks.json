@@ -4,7 +4,23 @@
     {
       "type": "npm",
       "script": "watch",
-      "problemMatcher": "$tsc-watch",
+      "problemMatcher": {
+        "base": "$esbuild",
+        "severity": "error",
+        "applyTo": "closedDocuments",
+        "source": "esbuild",
+        "owner": "typescript",
+        "fileLocation": "relative",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": {
+            "regexp": "\\[watch\\] build started"
+          },
+          "endsPattern": {
+            "regexp": "\\[watch\\] build finished"
+          }
+        }
+      },
       "isBackground": true,
       "presentation": {
         "reveal": "never"

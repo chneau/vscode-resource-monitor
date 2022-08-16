@@ -10,6 +10,19 @@ http://keepachangelog.com/
 
 ## [Unreleased]
 
+## [1.0.1] - 2022-08-14
+
+### Added
+
+- File system usage.
+
+### Removed
+
+- CPU temperature.
+- Battery charge.
+- CPU speed.
+- Filesystem usage.
+
 ## [1.0.0] - 2022-08-14
 
 ### Changed

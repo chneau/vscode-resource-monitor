@@ -45,4 +45,5 @@
 
 ```bash
 # Go to https://dev.azure.com/chneau/_usersSettings/tokens
+# Go to https://code.visualstudio.com/api/references/icons-in-labels for icon names
 ```

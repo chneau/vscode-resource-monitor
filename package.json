@@ -2,7 +2,7 @@
   "name": "resource-monitor",
   "displayName": "Resource Monitor",
   "description": "A simple resource monitor.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "chneau",
   "license": "MIT",
   "galleryBanner": {
@@ -37,9 +37,8 @@
   ],
   "main": "./out/main.js",
   "scripts": {
-    "esbuild-base": "esbuild ./src/main.ts --outfile=out/main.js",
-    "build": "npm run esbuild-base -- --bundle --external:vscode --platform=node --minify",
-    "watch": "npm run esbuild-base -- --format=cjs --watch"
+    "build": "esbuild ./src/main.ts --outfile=out/main.js --bundle --external:vscode --platform=node --minify",
+    "watch": "npm run build -- --watch"
   },
   "devDependencies": {
     "@types/node": "16.x",
@@ -51,6 +50,7 @@
     "printWidth": 999999
   },
   "dependencies": {
+    "pretty-bytes": "^6.0.0",
     "systeminformation": "^5.12.5"
   }
 }
