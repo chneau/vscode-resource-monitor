@@ -38,7 +38,10 @@
   "main": "./out/main.js",
   "scripts": {
     "build": "esbuild ./src/main.ts --outfile=out/main.js --bundle --external:vscode --platform=node --minify",
-    "watch": "npm run build -- --watch"
+    "watch": "npm run build -- --watch",
+    "update": "npm exec --yes npm-check-updates@latest -- --upgrade --target=minor && npm update",
+    "check": "tsc --noEmit --skipLibCheck",
+    "format": "npm exec --yes prettier@latest -- --cache --write . --ignore-path .gitignore"
   },
   "devDependencies": {
     "@types/node": "16.x",
