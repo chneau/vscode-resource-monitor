@@ -46,6 +46,8 @@
 ```bash
 # Go to https://dev.azure.com/chneau/_usersSettings/tokens
 # Go to https://code.visualstudio.com/api/references/icons-in-labels for icon names
+# Go to https://systeminformation.io/general.html for system info
+# Go to https://marketplace.visualstudio.com/items?itemName=chneau.resource-monitor to see the extension
 bun i -g @vscode/vsce
 bun run build
 vsce package
