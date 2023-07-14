@@ -10,6 +10,12 @@ http://keepachangelog.com/
 
 ## [Unreleased]
 
+## [1.0.2] - 2023-07-14
+
+### Changed
+
+- The way the data is polled is now as efficient as possible.
+
 ## [1.0.1] - 2022-08-14
 
 ### Added

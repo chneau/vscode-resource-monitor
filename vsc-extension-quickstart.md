@@ -46,4 +46,8 @@
 ```bash
 # Go to https://dev.azure.com/chneau/_usersSettings/tokens
 # Go to https://code.visualstudio.com/api/references/icons-in-labels for icon names
+bun i -g @vscode/vsce
+bun run build
+vsce package
+vsce publish # enter fresh token from https://dev.azure.com/chneau/_usersSettings/tokens
 ```
