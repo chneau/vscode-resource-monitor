@@ -1,38 +1,48 @@
 import prettyBytes from "pretty-bytes";
-import { currentLoad, fsStats, mem, networkStats, powerShellRelease, powerShellStart } from "systeminformation";
+import { get, powerShellRelease, powerShellStart } from "systeminformation";
 import { ExtensionContext, StatusBarAlignment, window } from "vscode";
 
-const intervalIds: NodeJS.Timer[] = [];
+let intervalIds: NodeJS.Timer;
 
-export const activate = async ({ subscriptions: sub }: ExtensionContext) => {
+interface GetAllResult {
+  currentLoad: { currentLoad: number };
+  mem: { active: number };
+  networkStats: { rx_sec: number | null; tx_sec: number | null }[];
+  fsStats: { rx_sec: number | null; wx_sec: number | null };
+}
+
+export const activate = async ({ subscriptions }: ExtensionContext) => {
   if (process.platform === "win32") powerShellStart();
-  let priority = -1000;
-  sub.push(newSBI({ fn: currentLoad, text: (x) => `$(pulse)${x.currentLoad.toFixed(2)}%`, name: "CPU load", priority: priority-- }));
-  sub.push(newSBI({ fn: mem, text: (x) => `$(server)${prettyBytes(x.active)}`, name: "Memory usage", priority: priority-- }));
-  sub.push(newSBI({ fn: networkStats, text: (x) => `$(cloud-download)${prettyBytes(x[0]?.rx_sec ?? 0)}$(cloud-upload)${prettyBytes(x[0]?.tx_sec ?? 0)}`, name: "Network usage", priority: priority-- }));
-  sub.push(newSBI({ fn: fsStats, text: (x) => `$(log-in)${prettyBytes(x.wx_sec ?? 0)}$(log-out)${prettyBytes(x.rx_sec ?? 0)}`, name: "File system usage", priority: priority-- }));
+  const cpuBar = newSBI({ name: "CPU load", priority: -1e3 - 1 });
+  const memBar = newSBI({ name: "Memory usage", priority: -1e3 - 2 });
+  const networkBar = newSBI({ name: "Network usage", priority: -1e3 - 3 });
+  const fsBar = newSBI({ name: "File system usage", priority: -1e3 - 4 });
+  subscriptions.push(cpuBar, memBar, networkBar, fsBar);
+  const refreshBars = async () => {
+    const { currentLoad, mem, networkStats, fsStats }: GetAllResult = await get({ currentLoad: "currentLoad", mem: "active", networkStats: "rx_sec,tx_sec", fsStats: "rx_sec,wx_sec" });
+    const currentLoadText = `$(pulse)${currentLoad.currentLoad.toFixed(2)}%`;
+    const memText = `$(server)${prettyBytes(mem.active)}`;
+    const networkStatsText = `$(cloud-download)${prettyBytes(networkStats?.[0]?.rx_sec ?? 0)}$(cloud-upload)${prettyBytes(networkStats?.[0]?.tx_sec ?? 0)}`;
+    const fsStatsText = `$(log-in)${prettyBytes(fsStats.wx_sec ?? 0)}$(log-out)${prettyBytes(fsStats.rx_sec ?? 0)}`;
+    cpuBar.text = currentLoadText;
+    memBar.text = memText;
+    networkBar.text = networkStatsText;
+    fsBar.text = fsStatsText;
+    return `${currentLoadText} ${memText} ${networkStatsText} ${fsStatsText}`;
+  };
+  refreshBars();
+  intervalIds = setInterval(refreshBars, 1000);
 };
 
 export const deactivate = () => {
   if (process.platform === "win32") powerShellRelease();
-  intervalIds.forEach((id) => clearInterval(id));
+  clearInterval(intervalIds);
 };
 
-interface NewSBIProps<T> {
-  fn: () => Promise<T>;
-  text: (value: T) => string;
-  name: string;
-  ms?: number;
-  priority?: number;
-}
-
-const newSBI = <T>({ fn, text, name, ms = 1000, priority }: NewSBIProps<T>) => {
+const newSBI = ({ name, priority }: { name: string; priority: number }) => {
   const sbi = window.createStatusBarItem(`ResMon: ${name}`, StatusBarAlignment.Left, priority);
   sbi.show();
   sbi.tooltip = name;
   sbi.name = sbi.id;
-  const updateTexts = async () => (sbi.text = text(await fn()));
-  updateTexts();
-  intervalIds.push(setInterval(updateTexts, ms));
   return sbi;
 };
