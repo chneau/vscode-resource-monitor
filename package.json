@@ -2,7 +2,7 @@
   "name": "resource-monitor",
   "displayName": "Resource Monitor",
   "description": "A simple resource monitor.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "chneau",
   "license": "MIT",
   "galleryBanner": {
@@ -27,7 +27,7 @@
   },
   "icon": "images/icon.png",
   "engines": {
-    "vscode": "^1.70.0"
+    "vscode": "^1.78.0"
   },
   "categories": [
     "Other"
@@ -39,21 +39,21 @@
   "scripts": {
     "build": "esbuild ./src/main.ts --outfile=out/main.js --bundle --external:vscode --platform=node --minify",
     "watch": "npm run build -- --watch",
-    "update": "npm exec --yes npm-check-updates@latest -- --upgrade --target=minor && npm update",
+    "update": "npx npm-check-updates@latest --upgrade && npm update",
     "check": "tsc --noEmit --skipLibCheck",
-    "format": "npm exec --yes prettier@latest -- --cache --write . --ignore-path .gitignore"
-  },
-  "devDependencies": {
-    "@types/node": "16.x",
-    "@types/vscode": "^1.70.0",
-    "esbuild": "^0.15.3",
-    "typescript": "^4.7.4"
-  },
-  "prettier": {
-    "printWidth": 999999
+    "format": "npx prettier@latest --cache --write . --ignore-path .gitignore"
   },
   "dependencies": {
-    "pretty-bytes": "^6.0.0",
-    "systeminformation": "^5.12.5"
+    "pretty-bytes": "^6.1.0",
+    "systeminformation": "^5.18.7"
+  },
+  "devDependencies": {
+    "@types/node": "20.x",
+    "@types/vscode": "^1.80.0",
+    "esbuild": "^0.18.12",
+    "typescript": "^5.1.6"
+  },
+  "prettier": {
+    "printWidth": 1e+99
   }
 }
