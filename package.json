@@ -2,7 +2,7 @@
   "name": "resource-monitor",
   "displayName": "Resource Monitor",
   "description": "A simple resource monitor.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publisher": "chneau",
   "license": "MIT",
   "galleryBanner": {
@@ -41,7 +41,8 @@
     "watch": "npm run build -- --watch",
     "update": "npx npm-check-updates@latest --upgrade && npm update",
     "check": "tsc --noEmit --skipLibCheck",
-    "format": "npx prettier@latest --cache --write . --ignore-path .gitignore"
+    "format": "npx prettier@latest --cache --write . --ignore-path .gitignore",
+    "bench": "hyperfine 'bun run benchmarks/multipleCalls.ts' 'bun run benchmarks/oneCall.ts'"
   },
   "dependencies": {
     "pretty-bytes": "^6.1.1",

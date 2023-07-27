@@ -1,15 +1,28 @@
 import prettyBytes from "pretty-bytes";
-import { get, powerShellRelease, powerShellStart } from "systeminformation";
+import { currentLoad, fsStats, mem, networkStats, powerShellRelease, powerShellStart } from "systeminformation";
 import { ExtensionContext, StatusBarAlignment, window } from "vscode";
 
 let intervalIds: NodeJS.Timer;
 
-interface GetAllResult {
-  currentLoad: { currentLoad: number };
-  mem: { active: number };
-  networkStats: { rx_sec: number | null; tx_sec: number | null }[];
-  fsStats: { rx_sec: number | null; wx_sec: number | null };
-}
+const getCurrentLoadText = async () => {
+  const cl = await currentLoad();
+  return `$(pulse)${cl.currentLoad.toFixed(2)}%`;
+};
+
+const getMemText = async () => {
+  const m = await mem();
+  return `$(server)${prettyBytes(m.active)}`;
+};
+
+const getNetworkStatsText = async () => {
+  const ns = await networkStats();
+  return `$(cloud-download)${prettyBytes(ns?.[0]?.rx_sec ?? 0)}$(cloud-upload)${prettyBytes(ns?.[0]?.tx_sec ?? 0)}`;
+};
+
+const getFsStatsText = async () => {
+  const fs = await fsStats();
+  return `$(log-in)${prettyBytes(fs.wx_sec ?? 0)}$(log-out)${prettyBytes(fs.rx_sec ?? 0)}`;
+};
 
 export const activate = async ({ subscriptions }: ExtensionContext) => {
   if (process.platform === "win32") powerShellStart();
@@ -19,11 +32,7 @@ export const activate = async ({ subscriptions }: ExtensionContext) => {
   const fsBar = newStatusBarItem({ name: "File system usage", priority: -1e3 - 4 });
   subscriptions.push(cpuBar, memBar, networkBar, fsBar);
   const updateBarsText = async () => {
-    const { currentLoad, mem, networkStats, fsStats }: GetAllResult = await get({ currentLoad: "currentLoad", mem: "active", networkStats: "rx_sec,tx_sec", fsStats: "rx_sec,wx_sec" });
-    const currentLoadText = `$(pulse)${currentLoad.currentLoad.toFixed(2)}%`;
-    const memText = `$(server)${prettyBytes(mem.active)}`;
-    const networkStatsText = `$(cloud-download)${prettyBytes(networkStats?.[0]?.rx_sec ?? 0)}$(cloud-upload)${prettyBytes(networkStats?.[0]?.tx_sec ?? 0)}`;
-    const fsStatsText = `$(log-in)${prettyBytes(fsStats.wx_sec ?? 0)}$(log-out)${prettyBytes(fsStats.rx_sec ?? 0)}`;
+    const [currentLoadText, memText, networkStatsText, fsStatsText] = await Promise.all([getCurrentLoadText(), getMemText(), getNetworkStatsText(), getFsStatsText()]);
     cpuBar.text = currentLoadText;
     memBar.text = memText;
     networkBar.text = networkStatsText;
