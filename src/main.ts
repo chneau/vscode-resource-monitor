@@ -13,12 +13,12 @@ interface GetAllResult {
 
 export const activate = async ({ subscriptions }: ExtensionContext) => {
   if (process.platform === "win32") powerShellStart();
-  const cpuBar = newSBI({ name: "CPU load", priority: -1e3 - 1 });
-  const memBar = newSBI({ name: "Memory usage", priority: -1e3 - 2 });
-  const networkBar = newSBI({ name: "Network usage", priority: -1e3 - 3 });
-  const fsBar = newSBI({ name: "File system usage", priority: -1e3 - 4 });
+  const cpuBar = newStatusBarItem({ name: "CPU load", priority: -1e3 - 1 });
+  const memBar = newStatusBarItem({ name: "Memory usage", priority: -1e3 - 2 });
+  const networkBar = newStatusBarItem({ name: "Network usage", priority: -1e3 - 3 });
+  const fsBar = newStatusBarItem({ name: "File system usage", priority: -1e3 - 4 });
   subscriptions.push(cpuBar, memBar, networkBar, fsBar);
-  const refreshBars = async () => {
+  const updateBarsText = async () => {
     const { currentLoad, mem, networkStats, fsStats }: GetAllResult = await get({ currentLoad: "currentLoad", mem: "active", networkStats: "rx_sec,tx_sec", fsStats: "rx_sec,wx_sec" });
     const currentLoadText = `$(pulse)${currentLoad.currentLoad.toFixed(2)}%`;
     const memText = `$(server)${prettyBytes(mem.active)}`;
@@ -28,10 +28,9 @@ export const activate = async ({ subscriptions }: ExtensionContext) => {
     memBar.text = memText;
     networkBar.text = networkStatsText;
     fsBar.text = fsStatsText;
-    return `${currentLoadText} ${memText} ${networkStatsText} ${fsStatsText}`;
   };
-  refreshBars();
-  intervalIds = setInterval(refreshBars, 1000);
+  updateBarsText();
+  intervalIds = setInterval(updateBarsText, 1000);
 };
 
 export const deactivate = () => {
@@ -39,7 +38,7 @@ export const deactivate = () => {
   clearInterval(intervalIds);
 };
 
-const newSBI = ({ name, priority }: { name: string; priority: number }) => {
+const newStatusBarItem = ({ name, priority }: { name: string; priority: number }) => {
   const sbi = window.createStatusBarItem(`ResMon: ${name}`, StatusBarAlignment.Left, priority);
   sbi.show();
   sbi.tooltip = name;
