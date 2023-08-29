@@ -56,5 +56,32 @@
   },
   "prettier": {
     "printWidth": 1e+99
+  },
+  "contributes": {
+    "configuration": {
+      "title": "Resource Monitor",
+      "properties": {
+        "resource-monitor.cpu": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show CPU usage."
+        },
+        "resource-monitor.memory": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show memory usage."
+        },
+        "resource-monitor.network": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show network usage."
+        },
+        "resource-monitor.file-system": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show file system usage."
+        }
+      }
+    }
   }
 }
