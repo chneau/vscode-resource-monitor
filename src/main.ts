@@ -2,7 +2,7 @@ import prettyBytes from "pretty-bytes";
 import { currentLoad, fsStats, mem, networkStats, powerShellRelease, powerShellStart } from "systeminformation";
 import { ExtensionContext, StatusBarAlignment, window } from "vscode";
 
-let intervalIds: NodeJS.Timer;
+let intervalIds: NodeJS.Timeout;
 
 const getCurrentLoadText = async () => {
   const cl = await currentLoad();
