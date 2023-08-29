@@ -13,5 +13,6 @@
     "noImplicitReturns": false,
     "noFallthroughCasesInSwitch": false,
     "noUncheckedIndexedAccess": true
-  }
+  },
+  "include": ["src/**/*"]
 }
