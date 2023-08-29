@@ -61,10 +61,14 @@ export class Metric {
     if (!this.#bar) throw new Error("Metric not initialized");
     this.#bar.text = await this.#getText();
   }
+
+  dispose() {
+    this.#bar.dispose();
+  }
 }
 
 const newBarItem = ({ name, priority }: { name: string; priority: number }) => {
-  const sbi = window.createStatusBarItem(`ResMon: ${name}`, StatusBarAlignment.Left, priority);
+  const sbi = window.createStatusBarItem(name, StatusBarAlignment.Left, priority);
   sbi.show();
   sbi.tooltip = name;
   sbi.name = sbi.id;

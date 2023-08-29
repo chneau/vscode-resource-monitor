@@ -1,20 +1,28 @@
 import { powerShellRelease, powerShellStart } from "systeminformation";
-import { ExtensionContext } from "vscode";
+import { workspace } from "vscode";
 import { Metric, cpuMetric, fileSystemMetric, memoryMetric, networkMetric } from "./metrics";
 
 let intervalIds: NodeJS.Timeout;
+let metrics: Metric[] = [];
 
-export const activate = async ({ subscriptions }: ExtensionContext) => {
+workspace.onDidChangeConfiguration(() => {
+  deactivate();
+  activate();
+});
+
+export const activate = async () => {
   if (process.platform === "win32") powerShellStart();
-  let cpuMetrics: Metric[] = [cpuMetric, memoryMetric, networkMetric, fileSystemMetric];
-  cpuMetrics.forEach((metric) => metric.init());
-  cpuMetrics = cpuMetrics.filter((metric) => metric.enabled);
-  subscriptions.push(...cpuMetrics.map((metric) => metric.bar));
-  const updateBarsText = async () => await Promise.all(cpuMetrics.map((metric) => metric.update()));
+  metrics.forEach((metric) => metric.dispose());
+  metrics = [];
+  metrics = [cpuMetric, memoryMetric, networkMetric, fileSystemMetric];
+  metrics.forEach((x) => x.init());
+  metrics = metrics.filter((x) => x.enabled);
+  const updateBarsText = async () => await Promise.all(metrics.map((metric) => metric.update()));
   intervalIds = setInterval(updateBarsText, 1000);
 };
 
 export const deactivate = () => {
   if (process.platform === "win32") powerShellRelease();
   clearInterval(intervalIds);
+  metrics.forEach((metric) => metric.dispose());
 };
