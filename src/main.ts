@@ -1,6 +1,7 @@
 import { powerShellRelease, powerShellStart } from "systeminformation";
 import { workspace } from "vscode";
-import { Metric, cpuMetric, fileSystemMetric, memoryMetric, networkMetric } from "./metrics";
+import { getRefreshInterval } from "./configuration";
+import { Metric, getEnabledMetrics } from "./metrics";
 
 let intervalIds: NodeJS.Timeout;
 let metrics: Metric[] = [];
@@ -12,17 +13,14 @@ workspace.onDidChangeConfiguration(() => {
 
 export const activate = async () => {
   if (process.platform === "win32") powerShellStart();
-  metrics.forEach((metric) => metric.dispose());
-  metrics = [];
-  metrics = [cpuMetric, memoryMetric, networkMetric, fileSystemMetric];
-  metrics.forEach((x) => x.init());
-  metrics = metrics.filter((x) => x.enabled);
-  const updateBarsText = async () => await Promise.all(metrics.map((metric) => metric.update()));
-  intervalIds = setInterval(updateBarsText, 1000);
+  metrics.forEach((x) => x.dispose());
+  metrics = getEnabledMetrics();
+  const updateBarsText = async () => await Promise.all(metrics.map((x) => x.update()));
+  intervalIds = setInterval(updateBarsText, getRefreshInterval());
 };
 
 export const deactivate = () => {
   if (process.platform === "win32") powerShellRelease();
   clearInterval(intervalIds);
-  metrics.forEach((metric) => metric.dispose());
+  metrics.forEach((x) => x.dispose());
 };

@@ -81,6 +81,11 @@
           "type": "boolean",
           "default": true,
           "description": "Show file system usage."
+        },
+        "resource-monitor.refresh-interval": {
+          "type": "number",
+          "default": 1000,
+          "description": "Refresh interval in milliseconds."
         }
       }
     }

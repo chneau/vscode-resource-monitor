@@ -33,7 +33,6 @@ export class Metric {
   #getText: () => Promise<string>;
   #getBar: () => StatusBarItem;
   #getEnabled: () => boolean;
-  #enabled: boolean = false;
   #bar: StatusBarItem = null!;
 
   constructor({ getText, getBar, getEnabled }: MetricCtrProps) {
@@ -42,19 +41,11 @@ export class Metric {
     this.#getEnabled = getEnabled;
   }
 
-  get enabled() {
-    return this.#enabled;
-  }
-
-  get bar() {
-    return this.#bar;
-  }
-
   init() {
-    this.#enabled = this.#getEnabled();
-    if (!this.#enabled) return;
+    if (!this.#getEnabled()) return;
     this.#bar = this.#getBar();
     this.update();
+    return this;
   }
 
   async update() {
@@ -75,7 +66,28 @@ const newBarItem = ({ name, priority }: { name: string; priority: number }) => {
   return sbi;
 };
 
-export const cpuMetric = new Metric({ getText: cpuText, getBar: () => newBarItem({ name: "CPU load", priority: -1e3 - 1 }), getEnabled: () => isEnabled("resource-monitor.cpu") });
-export const memoryMetric = new Metric({ getText: memText, getBar: () => newBarItem({ name: "Memory usage", priority: -1e3 - 2 }), getEnabled: () => isEnabled("resource-monitor.memory") });
-export const networkMetric = new Metric({ getText: netText, getBar: () => newBarItem({ name: "Network usage", priority: -1e3 - 3 }), getEnabled: () => isEnabled("resource-monitor.network") });
-export const fileSystemMetric = new Metric({ getText: fsText, getBar: () => newBarItem({ name: "File system usage", priority: -1e3 - 4 }), getEnabled: () => isEnabled("resource-monitor.file-system") });
+const metrics: MetricCtrProps[] = [
+  {
+    getText: cpuText,
+    getBar: () => newBarItem({ name: "CPU load", priority: -1e3 - 1 }),
+    getEnabled: () => isEnabled("resource-monitor.cpu"),
+  },
+  {
+    getText: memText,
+    getBar: () => newBarItem({ name: "Memory usage", priority: -1e3 - 2 }),
+    getEnabled: () => isEnabled("resource-monitor.memory"),
+  },
+  {
+    getText: netText,
+    getBar: () => newBarItem({ name: "Network usage", priority: -1e3 - 3 }),
+    getEnabled: () => isEnabled("resource-monitor.network"),
+  },
+  {
+    getText: fsText,
+    getBar: () => newBarItem({ name: "File system usage", priority: -1e3 - 4 }),
+    getEnabled: () => isEnabled("resource-monitor.file-system"),
+  },
+];
+
+const allMetrics = metrics.map((x) => new Metric(x));
+export const getEnabledMetrics = (): Metric[] => allMetrics.map((x) => x.init()!).filter((x) => x);
