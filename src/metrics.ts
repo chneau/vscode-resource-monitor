@@ -1,7 +1,7 @@
 import prettyBytes from "pretty-bytes";
 import { currentLoad, fsStats, mem, networkStats } from "systeminformation";
 import { StatusBarAlignment, StatusBarItem, window } from "vscode";
-import { isEnabled } from "./configuration";
+import { OrderConfigurationKey, getOrder } from "./configuration";
 
 const cpuText = async () => {
   const cl = await currentLoad();
@@ -25,25 +25,26 @@ const fsText = async () => {
 
 interface MetricCtrProps {
   getText: () => Promise<string>;
-  getBar: () => StatusBarItem;
-  getEnabled: () => boolean;
+  name: string;
+  section: OrderConfigurationKey;
 }
 
 export class Metric {
   #getText: () => Promise<string>;
-  #getBar: () => StatusBarItem;
-  #getEnabled: () => boolean;
-  #bar: StatusBarItem = null!;
+  #name: string;
+  #section: OrderConfigurationKey;
+  #bar: StatusBarItem | null = null;
 
-  constructor({ getText, getBar, getEnabled }: MetricCtrProps) {
+  constructor({ getText, name, section }: MetricCtrProps) {
     this.#getText = getText;
-    this.#getBar = getBar;
-    this.#getEnabled = getEnabled;
+    this.#name = name;
+    this.#section = section;
   }
 
   init() {
-    if (!this.#getEnabled()) return;
-    this.#bar = this.#getBar();
+    const order = getOrder(this.#section);
+    if (!order) return;
+    this.#bar = newBarItem({ name: this.#name, priority: -1e3 - order });
     this.update();
     return this;
   }
@@ -54,7 +55,7 @@ export class Metric {
   }
 
   dispose() {
-    this.#bar.dispose();
+    this.#bar?.dispose();
   }
 }
 
@@ -67,27 +68,11 @@ const newBarItem = ({ name, priority }: { name: string; priority: number }) => {
 };
 
 const metrics: MetricCtrProps[] = [
-  {
-    getText: cpuText,
-    getBar: () => newBarItem({ name: "CPU load", priority: -1e3 - 1 }),
-    getEnabled: () => isEnabled("resource-monitor.cpu"),
-  },
-  {
-    getText: memText,
-    getBar: () => newBarItem({ name: "Memory usage", priority: -1e3 - 2 }),
-    getEnabled: () => isEnabled("resource-monitor.memory"),
-  },
-  {
-    getText: netText,
-    getBar: () => newBarItem({ name: "Network usage", priority: -1e3 - 3 }),
-    getEnabled: () => isEnabled("resource-monitor.network"),
-  },
-  {
-    getText: fsText,
-    getBar: () => newBarItem({ name: "File system usage", priority: -1e3 - 4 }),
-    getEnabled: () => isEnabled("resource-monitor.file-system"),
-  },
+  { getText: cpuText, name: "CPU usage", section: "resource-monitor.cpu" },
+  { getText: memText, name: "Memory usage", section: "resource-monitor.memory" },
+  { getText: netText, name: "Network usage", section: "resource-monitor.network" },
+  { getText: fsText, name: "File system usage", section: "resource-monitor.file-system" },
 ];
 
 const allMetrics = metrics.map((x) => new Metric(x));
-export const getEnabledMetrics = (): Metric[] => allMetrics.map((x) => x.init()!).filter((x) => x);
+export const getEnabledMetrics = () => allMetrics.flatMap((x) => x.init() || []);

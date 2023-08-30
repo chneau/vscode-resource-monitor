@@ -63,28 +63,32 @@
       "title": "Resource Monitor",
       "properties": {
         "resource-monitor.cpu": {
-          "type": "boolean",
-          "default": true,
-          "description": "Show CPU usage."
+          "type": "number",
+          "order": 0,
+          "default": 1,
+          "description": "Order of the CPU usage. 0 to hide."
         },
         "resource-monitor.memory": {
-          "type": "boolean",
-          "default": true,
-          "description": "Show memory usage."
+          "type": "number",
+          "order": 1,
+          "default": 2,
+          "description": "Order of the memory usage. 0 to hide."
         },
         "resource-monitor.network": {
-          "type": "boolean",
-          "default": true,
-          "description": "Show network usage."
+          "type": "number",
+          "order": 2,
+          "default": 3,
+          "description": "Order of the network usage. 0 to hide."
         },
         "resource-monitor.file-system": {
-          "type": "boolean",
-          "default": true,
-          "description": "Show file system usage."
+          "type": "number",
+          "order": 3,
+          "default": 4,
+          "description": "Order of the file system usage. 0 to hide."
         },
         "resource-monitor.refresh-interval": {
           "type": "number",
-          "default": 1000,
+          "default": 3000,
           "description": "Refresh interval in milliseconds."
         }
       }
