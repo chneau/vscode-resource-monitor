@@ -27,7 +27,7 @@
   },
   "icon": "images/icon.png",
   "engines": {
-    "vscode": "^1.81.0"
+    "vscode": "^1.84.1"
   },
   "categories": [
     "Other"
@@ -39,20 +39,20 @@
   "scripts": {
     "build": "esbuild ./src/main.ts --outfile=out/main.js --bundle --external:vscode --platform=node --minify",
     "watch": "npm run build -- --watch",
-    "update": "npx npm-check-updates@latest --upgrade && npm update",
+    "update": "npm-check-updates --upgrade && npm update",
     "check": "tsc --noEmit --skipLibCheck",
-    "format": "npx prettier@latest --cache --write . --ignore-path .gitignore",
+    "format": "prettier --cache --write . --ignore-path .gitignore",
     "bench": "hyperfine 'bun run benchmarks/multipleCalls.ts' 'bun run benchmarks/oneCall.ts'",
     "publish": "npm run build && vsce package && vsce publish"
   },
   "dependencies": {
     "pretty-bytes": "^6.1.1",
-    "systeminformation": "^5.21.1"
+    "systeminformation": "^5.21.17"
   },
   "devDependencies": {
     "@types/node": "20.x",
-    "@types/vscode": "^1.81.0",
-    "esbuild": "^0.19.2",
+    "@types/vscode": "^1.84.1",
+    "esbuild": "^0.19.5",
     "typescript": "^5.2.2"
   },
   "prettier": {
