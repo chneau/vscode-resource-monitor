@@ -27,7 +27,7 @@
   },
   "icon": "images/icon.png",
   "engines": {
-    "vscode": "^1.84.1"
+    "vscode": "^1.85.0"
   },
   "categories": [
     "Other"
