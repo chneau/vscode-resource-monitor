@@ -8,7 +8,7 @@ http://keepachangelog.com/
 `Security` in case of vulnerabilities.
  -->
 
-## [Unreleased]
+<!-- ## [Unreleased] -->
 
 ## [2.0.2] - 2023-12-20
 
