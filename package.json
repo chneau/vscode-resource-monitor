@@ -39,7 +39,7 @@
   "scripts": {
     "build": "esbuild ./src/main.ts --outfile=out/main.js --bundle --external:vscode --platform=node --minify",
     "watch": "npm run build -- --watch",
-    "update": "npm-check-updates --upgrade && npm update",
+    "upgrade": "npm-check-updates --upgrade && npm update",
     "check": "tsc --noEmit --skipLibCheck",
     "format": "prettier --cache --write . --ignore-path .gitignore",
     "bench": "hyperfine 'bun run benchmarks/multipleCalls.ts' 'bun run benchmarks/oneCall.ts'",
