@@ -1,18 +1,18 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "ES2020",
-    "outDir": "out",
-    "lib": ["ES2020"],
-    "rootDir": "src",
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": false,
-    "noFallthroughCasesInSwitch": false,
-    "noUncheckedIndexedAccess": true
-  },
-  "include": ["src/**/*"]
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "ES2020",
+		"outDir": "out",
+		"lib": ["ES2020"],
+		"rootDir": "src",
+		"strict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": false,
+		"noFallthroughCasesInSwitch": false,
+		"noUncheckedIndexedAccess": true
+	},
+	"include": ["src/**/*"]
 }

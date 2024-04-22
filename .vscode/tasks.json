@@ -1,34 +1,34 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "type": "npm",
-      "script": "watch",
-      "problemMatcher": {
-        "base": "$esbuild",
-        "severity": "error",
-        "applyTo": "closedDocuments",
-        "source": "esbuild",
-        "owner": "typescript",
-        "fileLocation": "relative",
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": {
-            "regexp": "\\[watch\\] build started"
-          },
-          "endsPattern": {
-            "regexp": "\\[watch\\] build finished"
-          }
-        }
-      },
-      "isBackground": true,
-      "presentation": {
-        "reveal": "never"
-      },
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "watch",
+			"problemMatcher": {
+				"base": "$esbuild",
+				"severity": "error",
+				"applyTo": "closedDocuments",
+				"source": "esbuild",
+				"owner": "typescript",
+				"fileLocation": "relative",
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": {
+						"regexp": "\\[watch\\] build started"
+					},
+					"endsPattern": {
+						"regexp": "\\[watch\\] build finished"
+					}
+				}
+			},
+			"isBackground": true,
+			"presentation": {
+				"reveal": "never"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
 }
