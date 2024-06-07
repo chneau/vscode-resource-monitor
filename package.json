@@ -36,7 +36,7 @@
 		"build": "esbuild ./src/main.ts --outfile=out/main.js --bundle --external:vscode --platform=node --minify",
 		"watch": "bun run build --watch",
 		"upgrade": "npm-check-updates --upgrade --install=always --packageManager=bun",
-		"check": "biome check --apply-unsafe .",
+		"check": "biome check --write --unsafe .",
 		"lint": "tsc --noEmit --skipLibCheck",
 		"bench": "hyperfine 'bun run benchmarks/multipleCalls.ts' 'bun run benchmarks/oneCall.ts'",
 		"publish": "bun run build && vsce package && vsce publish"
