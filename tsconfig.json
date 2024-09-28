@@ -11,8 +11,10 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"noImplicitReturns": false,
-		"noFallthroughCasesInSwitch": false,
-		"noUncheckedIndexedAccess": true
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true,
+		"noEmit": true,
+		"skipLibCheck": true
 	},
 	"include": ["src/**/*"]
 }

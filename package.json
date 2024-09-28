@@ -5,10 +5,7 @@
 	"version": "2.0.6",
 	"publisher": "chneau",
 	"license": "MIT",
-	"galleryBanner": {
-		"color": "#1E1E1E",
-		"theme": "dark"
-	},
+	"galleryBanner": { "color": "#1E1E1E", "theme": "dark" },
 	"keywords": [
 		"performance",
 		"resource",
@@ -26,30 +23,26 @@
 		"url": "https://github.com/chneau/vscode-resource-monitor"
 	},
 	"icon": "images/icon.png",
-	"engines": {
-		"vscode": "^1.92.0"
-	},
+	"engines": { "vscode": "^1.92.0" },
 	"categories": ["Other"],
 	"activationEvents": ["onStartupFinished"],
 	"main": "./out/main.js",
 	"scripts": {
 		"build": "esbuild ./src/main.ts --outfile=out/main.js --bundle --external:vscode --platform=node --minify",
 		"watch": "bun run build --watch",
-		"upgrade": "npm-check-updates --upgrade --install=always --packageManager=bun",
+		"upgrade": "bun update --latest",
 		"check": "biome check --write --unsafe .",
-		"lint": "tsc --noEmit --skipLibCheck",
+		"lint": "tsc",
 		"bench": "hyperfine 'bun run benchmarks/multipleCalls.ts' 'bun run benchmarks/oneCall.ts'",
-		"publish": "bun run build && vsce package && vsce publish"
+		"publish": "bun run build && vsce package && vsce publish",
+		"all": "bun run upgrade; bun run check; bun run lint"
 	},
-	"dependencies": {
-		"pretty-bytes": "^6.1.1",
-		"systeminformation": "^5.23.5"
-	},
+	"dependencies": { "pretty-bytes": "^6.1.1", "systeminformation": "^5.23.5" },
 	"devDependencies": {
-		"@types/node": "22.x",
-		"@types/vscode": "^1.92.0",
-		"esbuild": "^0.23.1",
-		"typescript": "^5.5.4"
+		"@types/node": "^22.7.4",
+		"@types/vscode": "^1.93.0",
+		"esbuild": "^0.24.0",
+		"typescript": "^5.6.2"
 	},
 	"contributes": {
 		"configuration": {
