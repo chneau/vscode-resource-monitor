@@ -2,10 +2,13 @@
 	"name": "resource-monitor",
 	"displayName": "Resource Monitor",
 	"description": "A simple resource monitor.",
-	"version": "2.0.6",
+	"version": "2.0.7",
 	"publisher": "chneau",
 	"license": "MIT",
-	"galleryBanner": { "color": "#1E1E1E", "theme": "dark" },
+	"galleryBanner": {
+		"color": "#1E1E1E",
+		"theme": "dark"
+	},
 	"keywords": [
 		"performance",
 		"resource",
@@ -23,7 +26,9 @@
 		"url": "https://github.com/chneau/vscode-resource-monitor"
 	},
 	"icon": "images/icon.png",
-	"engines": { "vscode": "^1.92.0" },
+	"engines": {
+		"vscode": "^1.94.0"
+	},
 	"categories": ["Other"],
 	"activationEvents": ["onStartupFinished"],
 	"main": "./out/main.js",
@@ -37,10 +42,13 @@
 		"publish": "bun run build && vsce package && vsce publish",
 		"all": "bun run upgrade; bun run check; bun run lint"
 	},
-	"dependencies": { "pretty-bytes": "^6.1.1", "systeminformation": "^5.23.5" },
+	"dependencies": {
+		"pretty-bytes": "^6.1.1",
+		"systeminformation": "^5.23.5"
+	},
 	"devDependencies": {
 		"@types/node": "^22.7.4",
-		"@types/vscode": "^1.93.0",
+		"@types/vscode": "^1.94.0",
 		"esbuild": "^0.24.0",
 		"typescript": "^5.6.2"
 	},
