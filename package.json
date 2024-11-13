@@ -2,7 +2,7 @@
 	"name": "resource-monitor",
 	"displayName": "Resource Monitor",
 	"description": "A simple resource monitor.",
-	"version": "2.0.7",
+	"version": "2.0.8",
 	"publisher": "chneau",
 	"license": "MIT",
 	"galleryBanner": {
@@ -27,7 +27,7 @@
 	},
 	"icon": "images/icon.png",
 	"engines": {
-		"vscode": "^1.94.0"
+		"vscode": "^1.95.0"
 	},
 	"categories": ["Other"],
 	"activationEvents": ["onStartupFinished"],
@@ -36,7 +36,7 @@
 		"build": "esbuild ./src/main.ts --outfile=out/main.js --bundle --external:vscode --platform=node --minify",
 		"watch": "bun run build --watch",
 		"upgrade": "bun update --latest",
-		"check": "biome check --write --unsafe .",
+		"check": "deno fmt --use-tabs --quiet; oxlint --fix-dangerously --quiet; biome check --write --unsafe .",
 		"lint": "tsc",
 		"bench": "hyperfine 'bun run benchmarks/multipleCalls.ts' 'bun run benchmarks/oneCall.ts'",
 		"publish": "bun run build && vsce package && vsce publish",
@@ -47,10 +47,10 @@
 		"systeminformation": "^5.23.5"
 	},
 	"devDependencies": {
-		"@types/node": "^22.7.4",
-		"@types/vscode": "^1.94.0",
+		"@types/node": "^22.9.0",
+		"@types/vscode": "^1.95.0",
 		"esbuild": "^0.24.0",
-		"typescript": "^5.6.2"
+		"typescript": "^5.6.3"
 	},
 	"contributes": {
 		"configuration": {

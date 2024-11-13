@@ -1,11 +1,11 @@
 import { workspace } from "vscode";
 
-const AllOrderConfigurationKeys = <const>[
+const AllOrderConfigurationKeys = [
 	"resource-monitor.cpu",
 	"resource-monitor.memory",
 	"resource-monitor.network",
 	"resource-monitor.file-system",
-];
+] as const;
 export type OrderConfigurationKey = (typeof AllOrderConfigurationKeys)[number];
 export const getOrder = (key: OrderConfigurationKey) =>
 	workspace.getConfiguration().get<number>(key) ?? 0;

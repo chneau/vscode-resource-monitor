@@ -1,6 +1,7 @@
 # resource-monitor
 
-A simple resource monitor. [Marketplace link.](https://marketplace.visualstudio.com/items?itemName=chneau.resource-monitor)
+A simple resource monitor.
+[Marketplace link.](https://marketplace.visualstudio.com/items?itemName=chneau.resource-monitor)
 
 ![example](images/bar.png)
 
