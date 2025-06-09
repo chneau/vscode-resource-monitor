@@ -6,7 +6,8 @@ import { type Metric, getEnabledMetrics } from "./metrics";
 let intervalIds: NodeJS.Timeout;
 let metrics: Metric[] = [];
 
-workspace.onDidChangeConfiguration(() => {
+workspace.onDidChangeConfiguration((e) => {
+	if (!e.affectsConfiguration("system-monitor")) return;
 	deactivate();
 	activate();
 });
