@@ -1,91 +1,95 @@
 {
-	"name": "resource-monitor",
-	"displayName": "Resource Monitor",
-	"description": "A simple resource monitor.",
-	"version": "2.0.9",
-	"publisher": "chneau",
-	"license": "MIT",
-	"galleryBanner": {
-		"color": "#1E1E1E",
-		"theme": "dark"
-	},
-	"keywords": [
-		"performance",
-		"resource",
-		"resources",
-		"monitor",
-		"memory",
-		"cpu",
-		"io",
-		"network",
-		"disk",
-		"storage"
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/chneau/vscode-resource-monitor"
-	},
-	"icon": "images/icon.png",
-	"engines": {
-		"vscode": "^1.99.1"
-	},
-	"categories": ["Other"],
-	"activationEvents": ["onStartupFinished"],
-	"main": "./out/main.js",
-	"scripts": {
-		"build": "esbuild ./src/main.ts --outfile=out/main.js --bundle --external:vscode --platform=node --minify",
-		"watch": "bun run build --watch",
-		"upgrade": "bun update --latest",
-		"check": "deno fmt --use-tabs --quiet; oxlint --fix-dangerously --quiet; timeout 3s biome check --write --unsafe .",
-		"lint": "tsc --noEmit",
-		"bench": "hyperfine 'bun run benchmarks/multipleCalls.ts' 'bun run benchmarks/oneCall.ts'",
-		"publish": "bun run build && vsce package && vsce publish",
-		"all": "bun run upgrade; bun run check; bun run lint"
-	},
-	"dependencies": {
-		"pretty-bytes": "^6.1.1",
-		"systeminformation": "^5.25.11"
-	},
-	"devDependencies": {
-		"@types/node": "^22.14.1",
-		"@types/vscode": "^1.99.1",
-		"esbuild": "^0.25.2",
-		"typescript": "^5.8.3"
-	},
-	"contributes": {
-		"configuration": {
-			"title": "Resource Monitor",
-			"properties": {
-				"resource-monitor.cpu": {
-					"type": "number",
-					"order": 0,
-					"default": 1,
-					"description": "Order of the CPU usage. 0 to hide."
-				},
-				"resource-monitor.memory": {
-					"type": "number",
-					"order": 1,
-					"default": 2,
-					"description": "Order of the memory usage. 0 to hide."
-				},
-				"resource-monitor.network": {
-					"type": "number",
-					"order": 2,
-					"default": 3,
-					"description": "Order of the network usage. 0 to hide."
-				},
-				"resource-monitor.file-system": {
-					"type": "number",
-					"order": 3,
-					"default": 4,
-					"description": "Order of the file system usage. 0 to hide."
-				},
-				"resource-monitor.refresh-interval": {
-					"type": "number",
-					"default": 3000,
-					"description": "Refresh interval in milliseconds."
-				}
-			}
-		}
-	}
+  "name": "resource-monitor",
+  "displayName": "Resource Monitor",
+  "description": "A simple resource monitor.",
+  "version": "2.0.10",
+  "publisher": "chneau",
+  "license": "MIT",
+  "galleryBanner": {
+    "color": "#1E1E1E",
+    "theme": "dark"
+  },
+  "keywords": [
+    "performance",
+    "resource",
+    "resources",
+    "monitor",
+    "memory",
+    "cpu",
+    "io",
+    "network",
+    "disk",
+    "storage"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chneau/vscode-resource-monitor"
+  },
+  "icon": "images/icon.png",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/main.js",
+  "scripts": {
+    "build": "esbuild ./src/main.ts --outfile=out/main.js --bundle --external:vscode --platform=node --minify",
+    "watch": "bun run build --watch",
+    "upgrade": "bun update --latest",
+    "check": "deno fmt --use-tabs --quiet; oxlint --fix-dangerously --quiet; timeout 3s biome check --write --unsafe .",
+    "lint": "tsc --noEmit",
+    "bench": "hyperfine 'bun run benchmarks/multipleCalls.ts' 'bun run benchmarks/oneCall.ts'",
+    "publish": "bun run build && vsce package && vsce publish",
+    "all": "bun run upgrade; bun run check; bun run lint"
+  },
+  "dependencies": {
+    "pretty-bytes": "^7.0.0",
+    "systeminformation": "^5.27.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "@types/vscode": "^1.100.0",
+    "esbuild": "^0.25.5",
+    "typescript": "^5.8.3"
+  },
+  "contributes": {
+    "configuration": {
+      "title": "Resource Monitor",
+      "properties": {
+        "resource-monitor.cpu": {
+          "type": "number",
+          "order": 0,
+          "default": 1,
+          "description": "Order of the CPU usage. 0 to hide."
+        },
+        "resource-monitor.memory": {
+          "type": "number",
+          "order": 1,
+          "default": 2,
+          "description": "Order of the memory usage. 0 to hide."
+        },
+        "resource-monitor.network": {
+          "type": "number",
+          "order": 2,
+          "default": 3,
+          "description": "Order of the network usage. 0 to hide."
+        },
+        "resource-monitor.file-system": {
+          "type": "number",
+          "order": 3,
+          "default": 4,
+          "description": "Order of the file system usage. 0 to hide."
+        },
+        "resource-monitor.refresh-interval": {
+          "type": "number",
+          "default": 3000,
+          "description": "Refresh interval in milliseconds."
+        }
+      }
+    }
+  }
 }
