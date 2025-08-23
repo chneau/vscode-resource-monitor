@@ -1,7 +1,7 @@
 import { powerShellRelease, powerShellStart } from "systeminformation";
 import { workspace } from "vscode";
 import { getRefreshInterval } from "./configuration";
-import { type Metric, getEnabledMetrics } from "./metrics";
+import { getEnabledMetrics, type Metric } from "./metrics";
 
 let intervalIds: NodeJS.Timeout;
 let metrics: Metric[] = [];

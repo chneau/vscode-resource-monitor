@@ -1,7 +1,7 @@
 import prettyBytes from "pretty-bytes";
 import { currentLoad, fsStats, mem, networkStats } from "systeminformation";
 import { StatusBarAlignment, type StatusBarItem, window } from "vscode";
-import { type OrderConfigurationKey, getOrder } from "./configuration";
+import { getOrder, type OrderConfigurationKey } from "./configuration";
 
 const cpuText = async () => {
 	const cl = await currentLoad();
