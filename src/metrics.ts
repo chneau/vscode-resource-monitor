@@ -5,12 +5,12 @@ import { getOrder, type OrderConfigurationKey } from "./configuration";
 
 const cpuText = async () => {
 	const cl = await currentLoad();
-	return `$(pulse)${cl.currentLoad.toFixed(2)}%`;
+	return `$(pulse)${cl?.currentLoad?.toFixed(2)}%`;
 };
 
 const memText = async () => {
 	const m = await mem();
-	return `$(server)${prettyBytes(m.active)}`;
+	return `$(server)${prettyBytes(m?.active ?? 0)}`;
 };
 
 const netText = async () => {
@@ -22,8 +22,8 @@ const netText = async () => {
 
 const fsText = async () => {
 	const fs = await fsStats();
-	return `$(log-in)${prettyBytes(fs.wx_sec ?? 0)}$(log-out)${prettyBytes(
-		fs.rx_sec ?? 0,
+	return `$(log-in)${prettyBytes(fs?.wx_sec ?? 0)}$(log-out)${prettyBytes(
+		fs?.rx_sec ?? 0,
 	)}`;
 };
 

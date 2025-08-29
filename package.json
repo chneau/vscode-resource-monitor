@@ -48,7 +48,7 @@
 	},
 	"dependencies": {
 		"pretty-bytes": "^7.0.1",
-		"systeminformation": "^5.27.7"
+		"systeminformation": "^5.27.8"
 	},
 	"devDependencies": {
 		"@types/node": "^24.3.0",
