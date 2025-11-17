@@ -2,7 +2,7 @@
 	"name": "resource-monitor",
 	"displayName": "Resource Monitor",
 	"description": "A simple resource monitor.",
-	"version": "2.0.15",
+	"version": "2.0.16",
 	"publisher": "chneau",
 	"license": "MIT",
 	"galleryBanner": {
