@@ -40,7 +40,7 @@
 		"build": "esbuild ./src/main.ts --outfile=out/main.js --bundle --external:vscode --platform=node --minify",
 		"watch": "bun run build --watch",
 		"upgrade": "bun update --latest; bun install --dev @types/vscode@1.99.0",
-		"check": "deno fmt --use-tabs --quiet; oxlint --fix-dangerously --quiet; timeout 3s biome check --write --unsafe .",
+		"check": "rm -rf out; deno fmt --use-tabs --quiet; oxlint --fix-dangerously --quiet; timeout 3s biome check --write --unsafe .",
 		"lint": "tsc --noEmit",
 		"bench": "hyperfine 'bun run benchmarks/multipleCalls.ts' 'bun run benchmarks/oneCall.ts'",
 		"publish": "bun run build && vsce package && vsce publish",
@@ -48,13 +48,14 @@
 	},
 	"dependencies": {
 		"pretty-bytes": "^7.1.0",
-		"systeminformation": "^5.27.10"
+		"systeminformation": "^5.27.11"
 	},
 	"devDependencies": {
-		"@types/node": "^24.5.2",
+		"@types/node": "^24.10.1",
 		"@types/vscode": "1.99.0",
-		"esbuild": "^0.25.10",
-		"typescript": "^5.9.2"
+		"@vscode/vsce": "^3.7.0",
+		"esbuild": "^0.27.0",
+		"typescript": "^5.9.3"
 	},
 	"contributes": {
 		"configuration": {
