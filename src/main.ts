@@ -7,7 +7,7 @@ let intervalIds: NodeJS.Timeout;
 let metrics: Metric[] = [];
 
 workspace.onDidChangeConfiguration((e) => {
-	if (!e.affectsConfiguration("system-monitor")) return;
+	if (!e.affectsConfiguration("resource-monitor")) return;
 	deactivate();
 	activate();
 });

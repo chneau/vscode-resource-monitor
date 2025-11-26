@@ -5,6 +5,7 @@ const AllOrderConfigurationKeys = [
 	"resource-monitor.memory",
 	"resource-monitor.network",
 	"resource-monitor.file-system",
+	"resource-monitor.gpu",
 ] as const;
 export type OrderConfigurationKey = (typeof AllOrderConfigurationKeys)[number];
 export const getOrder = (key: OrderConfigurationKey) =>

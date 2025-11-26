@@ -1,5 +1,5 @@
 import prettyBytes from "pretty-bytes";
-import { currentLoad, fsStats, mem, networkStats } from "systeminformation";
+import { currentLoad, fsStats, graphics, mem, networkStats } from "systeminformation";
 import { StatusBarAlignment, type StatusBarItem, window } from "vscode";
 import { getOrder, type OrderConfigurationKey } from "./configuration";
 
@@ -25,6 +25,17 @@ const fsText = async () => {
 	return `$(log-in)${prettyBytes(fs?.wx_sec ?? 0)}$(log-out)${prettyBytes(
 		fs?.rx_sec ?? 0,
 	)}`;
+};
+
+const gpuText = async () => {
+	const g = await graphics();
+	let totalMemUsed = 0;
+	let maxUtil = 0;
+	for (const c of g.controllers) {
+		maxUtil = Math.max(maxUtil, c.utilizationGpu ?? 0);
+		totalMemUsed += (c.memoryUsed ?? 0) * 1024 * 1024;
+	}
+	return `$(zap)${maxUtil.toFixed(0)}% ${prettyBytes(totalMemUsed)}`;
 };
 
 interface MetricCtrProps {
@@ -91,6 +102,11 @@ const metrics: MetricCtrProps[] = [
 		getText: fsText,
 		name: "File system usage",
 		section: "resource-monitor.file-system",
+	},
+	{
+		getText: gpuText,
+		name: "GPU usage",
+		section: "resource-monitor.gpu",
 	},
 ];
 
