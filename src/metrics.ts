@@ -1,5 +1,11 @@
 import prettyBytes from "pretty-bytes";
-import { currentLoad, fsStats, graphics, mem, networkStats } from "systeminformation";
+import {
+	currentLoad,
+	fsStats,
+	graphics,
+	mem,
+	networkStats,
+} from "systeminformation";
 import { StatusBarAlignment, type StatusBarItem, window } from "vscode";
 import { getOrder, type OrderConfigurationKey } from "./configuration";
 
