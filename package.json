@@ -43,7 +43,7 @@
 		"check": "rm -rf out; deno fmt --use-tabs --quiet; oxlint --fix-dangerously --quiet; timeout 3s biome check --write --unsafe .",
 		"lint": "tsc --noEmit",
 		"bench": "hyperfine 'bun run benchmarks/multipleCalls.ts' 'bun run benchmarks/oneCall.ts'",
-		"publish": "bun run build && vsce package && vsce publish",
+		"publish": "bun run build && vsce publish; ovsx publish",
 		"all": "bun run upgrade; bun run check; bun run lint"
 	},
 	"dependencies": {

@@ -69,9 +69,11 @@
 # Go to https://code.visualstudio.com/api/references/icons-in-labels for icon names
 # Go to https://systeminformation.io/general.html for system info
 # Go to https://marketplace.visualstudio.com/items?itemName=chneau.resource-monitor to see the extension
-bun i -g @vscode/vsce
+bun i -g @vscode/vsce ovsx
 bun run build
 # vsce login chneau # enter fresh token from https://dev.azure.com/chneau/_usersSettings/tokens
-vsce package
 vsce publish # enter fresh token from https://dev.azure.com/chneau/_usersSettings/tokens
+# for ovsx, input PAT from https://open-vsx.org/user-settings/tokens
+ovsx login chneau
+ovsx publish
 ```
