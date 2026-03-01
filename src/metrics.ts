@@ -72,7 +72,12 @@ export class Metric {
 
 	async update() {
 		if (!this.#bar) throw new Error("Metric not initialized");
-		this.#bar.text = await this.#getText();
+		try {
+			this.#bar.text = await this.#getText();
+		} catch (error) {
+			console.error(`Failed to update metric ${this.#name}:`, error);
+			this.#bar.text = "$(error)";
+		}
 	}
 
 	dispose() {
