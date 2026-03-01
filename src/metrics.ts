@@ -77,6 +77,7 @@ export class Metric {
 
 	dispose() {
 		this.#bar?.dispose();
+		this.#bar = null;
 	}
 }
 
@@ -118,4 +119,4 @@ const metrics: MetricCtrProps[] = [
 
 const allMetrics = metrics.map((x) => new Metric(x));
 export const getEnabledMetrics = () =>
-	allMetrics.flatMap((x) => x.init() || []);
+	allMetrics.map((x) => x.init()).filter((x): x is Metric => x != null);

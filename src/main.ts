@@ -3,7 +3,7 @@ import { workspace } from "vscode";
 import { getRefreshInterval } from "./configuration";
 import { getEnabledMetrics, type Metric } from "./metrics";
 
-let intervalIds: NodeJS.Timeout;
+let intervalId: NodeJS.Timeout;
 let metrics: Metric[] = [];
 
 workspace.onDidChangeConfiguration((e) => {
@@ -18,11 +18,11 @@ export const activate = async () => {
 	metrics = getEnabledMetrics();
 	const updateBarsText = async () =>
 		await Promise.all(metrics.map((x) => x.update()));
-	intervalIds = setInterval(updateBarsText, getRefreshInterval());
+	intervalId = setInterval(updateBarsText, getRefreshInterval());
 };
 
 export const deactivate = () => {
 	if (process.platform === "win32") powerShellRelease();
-	clearInterval(intervalIds);
+	clearInterval(intervalId);
 	for (const metric of metrics) metric.dispose();
 };
