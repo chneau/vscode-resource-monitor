@@ -40,21 +40,24 @@
 		"build": "esbuild ./src/main.ts --outfile=out/main.js --bundle --external:vscode --platform=node --minify",
 		"watch": "bun run build --watch",
 		"upgrade": "bun update --latest; bun install --dev @types/vscode@1.99.0",
-		"check": "rm -rf out; deno fmt --use-tabs --quiet; oxlint --fix-dangerously --quiet; timeout 3s biome check --write --unsafe .",
+		"check": "bun run --sequential check:deno check:oxlint check:biome lint",
 		"lint": "tsc --noEmit",
 		"bench": "hyperfine 'bun run benchmarks/multipleCalls.ts' 'bun run benchmarks/oneCall.ts'",
 		"publish": "bun run build && vsce publish; ovsx publish",
-		"all": "bun run upgrade; bun run check; bun run lint"
+		"all": "bun run --sequential upgrade check:deno check:oxlint check:biome lint",
+		"check:deno": "deno fmt --use-tabs --quiet",
+		"check:oxlint": "oxlint --fix-dangerously --quiet",
+		"check:biome": "timeout 3s biome check --write --unsafe ."
 	},
 	"dependencies": {
 		"pretty-bytes": "^7.1.0",
-		"systeminformation": "^5.30.5"
+		"systeminformation": "^5.31.1"
 	},
 	"devDependencies": {
-		"@types/node": "^25.0.10",
-		"@types/vscode": "1.99.0",
+		"@types/node": "^25.3.3",
+		"@types/vscode": "1.109.0",
 		"@vscode/vsce": "^3.7.1",
-		"esbuild": "^0.27.2",
+		"esbuild": "^0.27.3",
 		"typescript": "^5.9.3"
 	},
 	"contributes": {
