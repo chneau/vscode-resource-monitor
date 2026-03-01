@@ -5,15 +5,15 @@
     "": {
       "name": "resource-monitor",
       "dependencies": {
-        "pretty-bytes": "latest",
-        "systeminformation": "latest",
+        "pretty-bytes": "^7.1.0",
+        "systeminformation": "^5.31.1",
       },
       "devDependencies": {
-        "@types/node": "latest",
-        "@types/vscode": "latest",
-        "@vscode/vsce": "latest",
-        "esbuild": "latest",
-        "typescript": "latest",
+        "@types/node": "^25.3.3",
+        "@types/vscode": "1.99.0",
+        "@vscode/vsce": "^3.7.1",
+        "esbuild": "^0.27.3",
+        "typescript": "^5.9.3",
       },
     },
   },
@@ -154,7 +154,7 @@
 
     "@types/sarif": ["@types/sarif@2.1.7", "", {}, "sha512-kRz0VEkJqWLf1LLVN4pT1cg1Z9wAuvI6L97V3m2f5B76Tg8d413ddvLBPTEHAZJlnn4XSvu0FkZtViCQGVyrXQ=="],
 
-    "@types/vscode": ["@types/vscode@1.109.0", "", {}, "sha512-0Pf95rnwEIwDbmXGC08r0B4TQhAbsHQ5UyTIgVgoieDe4cOnf92usuR5dEczb6bTKEp7ziZH4TV1TRGPPCExtw=="],
+    "@types/vscode": ["@types/vscode@1.99.0", "", {}, "sha512-30sjmas1hQ0gVbX68LAWlm/YYlEqUErunPJJKLpEl+xhK0mKn+jyzlCOpsdTwfkZfPy4U6CDkmygBLC3AB8W9Q=="],
 
     "@typespec/ts-http-runtime": ["@typespec/ts-http-runtime@0.3.2", "", { "dependencies": { "http-proxy-agent": "^7.0.0", "https-proxy-agent": "^7.0.0", "tslib": "^2.6.2" } }, "sha512-IlqQ/Gv22xUC1r/WQm4StLkYQmaaTsXAhUVsNE0+xiyf0yRFiH5++q78U3bw6bLKDCTmh0uqKB9eG9+Bt75Dkg=="],
 
