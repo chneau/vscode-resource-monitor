@@ -10,7 +10,14 @@ http://keepachangelog.com/
 
 <!-- ## [Unreleased] -->
 
-## [2.0.8] - 2026-08-19
+## [2.0.22] - 2026-08-19
+
+### Added
+
+- Added an interactive QuickPick configuration menu
+  (`Resource Monitor: Configure Metrics`). Clicking any status bar metric item
+  opens a checklist menu to toggle components on/off and access extension
+  settings.
 
 ### Changed
 

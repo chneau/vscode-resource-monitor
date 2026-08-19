@@ -66,12 +66,12 @@ const gpuText = async () => {
 	return `$(zap)${maxUtil.toFixed(0)}% ${prettyBytes(totalMemUsed)}`;
 };
 
-interface MetricCtrProps {
+type MetricCtrProps = {
 	getText: () => Promise<string>;
 	isHeavy?: boolean;
 	name: string;
 	section: OrderConfigurationKey;
-}
+};
 
 export class Metric {
 	#getText: () => Promise<string>;
@@ -118,7 +118,8 @@ const newBarItem = ({ name, priority }: { name: string; priority: number }) => {
 		priority,
 	);
 	sbi.show();
-	sbi.tooltip = name;
+	sbi.tooltip = `${name} (click to configure)`;
+	sbi.command = "resource-monitor.openMenu";
 	sbi.name = sbi.id;
 	return sbi;
 };

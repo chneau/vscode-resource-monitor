@@ -21,13 +21,16 @@ A simple resource monitor.
 - File system usage
 - GPU usage (disabled by default)
 
-You can easily enable/disable or reorder the monitors in the settings as well as
-changing the update interval.
+Clicking on any active metric in the status bar opens a quick menu allowing you
+to toggle individual components on/off and quickly navigate to settings.
+
+You can also customize the order of monitors in settings or adjust the refresh
+interval:
 
 ![example](images/settings.png)
 
-To enable GPU monitoring, go to settings and set `resource-monitor.gpu` to a
-value greater than 0.
+To enable GPU or other heavy metrics, use the status bar menu or set their order
+to a value greater than 0 in settings.
 
 <div align="center">
   <a href="https://marketplace.visualstudio.com/items?itemName=chneau.resource-monitor">

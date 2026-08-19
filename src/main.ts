@@ -1,6 +1,6 @@
 import { powerShellRelease, powerShellStart } from "systeminformation";
-import { window, workspace } from "vscode";
-import { getRefreshInterval } from "./configuration";
+import { commands, type ExtensionContext, window, workspace } from "vscode";
+import { getRefreshInterval, openConfigurationMenu } from "./configuration";
 import {
 	getEnabledMetrics,
 	hasHeavyMetrics,
@@ -29,10 +29,29 @@ const startPolling = () => {
 	intervalId = setInterval(updateBarsText, getRefreshInterval());
 };
 
+const refreshMetrics = () => {
+	for (const metric of metrics) metric.dispose();
+	metrics = getEnabledMetrics();
+	if (metrics.length === 0) return;
+
+	if (
+		process.platform === "win32" &&
+		hasHeavyMetrics() &&
+		!isPowerShellStarted
+	) {
+		powerShellStart();
+		isPowerShellStarted = true;
+	}
+
+	if (window.state.focused) {
+		startPolling();
+	}
+};
+
 workspace.onDidChangeConfiguration((e) => {
 	if (!e.affectsConfiguration("resource-monitor")) return;
-	deactivate();
-	activate();
+	stopPolling();
+	refreshMetrics();
 });
 
 window.onDidChangeWindowState((e) => {
@@ -43,19 +62,15 @@ window.onDidChangeWindowState((e) => {
 	}
 });
 
-export const activate = async () => {
-	for (const metric of metrics) metric.dispose();
-	metrics = getEnabledMetrics();
-	if (metrics.length === 0) return;
-
-	if (process.platform === "win32" && hasHeavyMetrics()) {
-		powerShellStart();
-		isPowerShellStarted = true;
+export const activate = async (context?: ExtensionContext) => {
+	const cmd = commands.registerCommand(
+		"resource-monitor.openMenu",
+		openConfigurationMenu,
+	);
+	if (context) {
+		context.subscriptions.push(cmd);
 	}
-
-	if (window.state.focused) {
-		startPolling();
-	}
+	refreshMetrics();
 };
 
 export const deactivate = () => {

@@ -2,7 +2,7 @@
 	"name": "resource-monitor",
 	"displayName": "Resource Monitor",
 	"description": "A simple resource monitor.",
-	"version": "2.0.8",
+	"version": "2.0.22",
 	"publisher": "chneau",
 	"license": "MIT",
 	"galleryBanner": {
@@ -64,6 +64,12 @@
 		"typescript": "^7.0.2"
 	},
 	"contributes": {
+		"commands": [
+			{
+				"command": "resource-monitor.openMenu",
+				"title": "Resource Monitor: Configure Metrics"
+			}
+		],
 		"configuration": {
 			"title": "Resource Monitor",
 			"properties": {
