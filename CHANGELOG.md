@@ -10,6 +10,21 @@ http://keepachangelog.com/
 
 <!-- ## [Unreleased] -->
 
+## [2.0.8] - 2026-08-19
+
+### Changed
+
+- Replaced `systeminformation` calls for CPU and memory with native Node.js `os`
+  APIs to prevent external process spawning, PowerShell script execution, and
+  excessive EDR/Rapid7 CPU overhead.
+- Pauses metric polling automatically when VS Code window is blurred/minimized
+  and resumes when focused.
+- Changed heavy metrics (Network, File System, GPU) to be opt-in (disabled by
+  default) to keep default resource usage minimal.
+- PowerShell instance on Windows is now only spawned if heavy metrics requiring
+  external system commands are enabled.
+- Set default refresh interval fallback to 3000ms.
+
 ## [2.0.7] - 2024-10-05
 
 ## Changed

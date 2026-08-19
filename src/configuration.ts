@@ -13,4 +13,4 @@ export const getOrder = (key: OrderConfigurationKey) =>
 export const getRefreshInterval = () =>
 	workspace
 		.getConfiguration()
-		.get<number>("resource-monitor.refresh-interval") ?? 1000;
+		.get<number>("resource-monitor.refresh-interval") ?? 3000;

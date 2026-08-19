@@ -1,22 +1,44 @@
+import os from "node:os";
 import prettyBytes from "pretty-bytes";
-import {
-	currentLoad,
-	fsStats,
-	graphics,
-	mem,
-	networkStats,
-} from "systeminformation";
+import { fsStats, graphics, networkStats } from "systeminformation";
 import { StatusBarAlignment, type StatusBarItem, window } from "vscode";
 import { getOrder, type OrderConfigurationKey } from "./configuration";
 
+let prevCpuTimes: { idle: number; total: number } | null = null;
+
+const getCpuUsage = (): number => {
+	const cpus = os.cpus();
+	let idle = 0;
+	let total = 0;
+	for (const cpu of cpus) {
+		for (const type of Object.keys(cpu.times) as (keyof typeof cpu.times)[]) {
+			total += cpu.times[type];
+		}
+		idle += cpu.times.idle;
+	}
+	if (!prevCpuTimes) {
+		prevCpuTimes = { idle, total };
+		return 0;
+	}
+	const idleDiff = idle - prevCpuTimes.idle;
+	const totalDiff = total - prevCpuTimes.total;
+	prevCpuTimes = { idle, total };
+	if (totalDiff <= 0) return 0;
+	return Math.max(0, Math.min(100, (1 - idleDiff / totalDiff) * 100));
+};
+
+export const resetCpuUsage = () => {
+	prevCpuTimes = null;
+};
+
 const cpuText = async () => {
-	const cl = await currentLoad();
-	return `$(pulse)${cl?.currentLoad?.toFixed(2)}%`;
+	const load = getCpuUsage();
+	return `$(pulse)${load.toFixed(2)}%`;
 };
 
 const memText = async () => {
-	const m = await mem();
-	return `$(server)${prettyBytes(m?.active ?? 0)}`;
+	const used = os.totalmem() - os.freemem();
+	return `$(server)${prettyBytes(used)}`;
 };
 
 const netText = async () => {
@@ -46,6 +68,7 @@ const gpuText = async () => {
 
 interface MetricCtrProps {
 	getText: () => Promise<string>;
+	isHeavy?: boolean;
 	name: string;
 	section: OrderConfigurationKey;
 }
@@ -55,11 +78,13 @@ export class Metric {
 	#name: string;
 	#section: OrderConfigurationKey;
 	#bar: StatusBarItem | null = null;
+	readonly isHeavy: boolean;
 
-	constructor({ getText, name, section }: MetricCtrProps) {
+	constructor({ getText, isHeavy = false, name, section }: MetricCtrProps) {
 		this.#getText = getText;
 		this.#name = name;
 		this.#section = section;
+		this.isHeavy = isHeavy;
 	}
 
 	init() {
@@ -99,24 +124,33 @@ const newBarItem = ({ name, priority }: { name: string; priority: number }) => {
 };
 
 const metrics: MetricCtrProps[] = [
-	{ getText: cpuText, name: "CPU usage", section: "resource-monitor.cpu" },
+	{
+		getText: cpuText,
+		isHeavy: false,
+		name: "CPU usage",
+		section: "resource-monitor.cpu",
+	},
 	{
 		getText: memText,
+		isHeavy: false,
 		name: "Memory usage",
 		section: "resource-monitor.memory",
 	},
 	{
 		getText: netText,
+		isHeavy: true,
 		name: "Network usage",
 		section: "resource-monitor.network",
 	},
 	{
 		getText: fsText,
+		isHeavy: true,
 		name: "File system usage",
 		section: "resource-monitor.file-system",
 	},
 	{
 		getText: gpuText,
+		isHeavy: true,
 		name: "GPU usage",
 		section: "resource-monitor.gpu",
 	},
@@ -125,3 +159,6 @@ const metrics: MetricCtrProps[] = [
 const allMetrics = metrics.map((x) => new Metric(x));
 export const getEnabledMetrics = () =>
 	allMetrics.map((x) => x.init()).filter((x): x is Metric => x != null);
+
+export const hasHeavyMetrics = () =>
+	metrics.some((x) => x.isHeavy && getOrder(x.section) > 0);
