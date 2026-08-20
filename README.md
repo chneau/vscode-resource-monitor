@@ -31,9 +31,3 @@ interval:
 
 To enable GPU or other heavy metrics, use the status bar menu or set their order
 to a value greater than 0 in settings.
-
-<div align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=chneau.resource-monitor">
-    <img src="https://img.shields.io/visual-studio-marketplace/v/chneau.resource-monitor?style=for-the-badge&label=VS%20Marketplace&color=007acc" alt="Visual Studio Marketplace Version" />
-  </a>
-</div>
