@@ -11,19 +11,27 @@ import {
 let intervalId: NodeJS.Timeout | undefined;
 let metrics: Metric[] = [];
 let isPowerShellStarted = false;
+let isPolling = false;
 
 const stopPolling = () => {
 	if (intervalId) {
 		clearInterval(intervalId);
 		intervalId = undefined;
 	}
+	isPolling = false;
 };
 
 const startPolling = () => {
 	stopPolling();
 	resetCpuUsage();
 	const updateBarsText = async () => {
-		await Promise.all(metrics.map((x) => x.update()));
+		if (isPolling) return;
+		isPolling = true;
+		try {
+			await Promise.all(metrics.map((x) => x.update()));
+		} finally {
+			isPolling = false;
+		}
 	};
 	updateBarsText();
 	intervalId = setInterval(updateBarsText, getRefreshInterval());

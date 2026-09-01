@@ -78,6 +78,7 @@ export class Metric {
 	#name: string;
 	#section: OrderConfigurationKey;
 	#bar: StatusBarItem | null = null;
+	#disposed = false;
 	readonly isHeavy: boolean;
 
 	constructor({ getText, isHeavy = false, name, section }: MetricCtrProps) {
@@ -90,22 +91,27 @@ export class Metric {
 	init() {
 		const order = getOrder(this.#section);
 		if (!order) return;
+		// Allow the same instance to be reused across refreshMetrics() cycles.
+		this.#disposed = false;
 		this.#bar = newBarItem({ name: this.#name, priority: -1e3 - order });
 		this.update();
 		return this;
 	}
 
 	async update() {
-		if (!this.#bar) throw new Error("Metric not initialized");
+		if (this.#disposed || !this.#bar) return;
 		try {
-			this.#bar.text = await this.#getText();
+			const text = await this.#getText();
+			if (this.#disposed || !this.#bar) return;
+			this.#bar.text = text;
 		} catch (error) {
 			console.error(`Failed to update metric ${this.#name}:`, error);
-			this.#bar.text = "$(error)";
+			if (!this.#disposed && this.#bar) this.#bar.text = "$(error)";
 		}
 	}
 
 	dispose() {
+		this.#disposed = true;
 		this.#bar?.dispose();
 		this.#bar = null;
 	}
