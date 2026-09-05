@@ -46,27 +46,3 @@ interval.
 The network, file system, GPU, battery, and temperature metrics probe the system
 more aggressively, so they are disabled by default. To enable them, use the
 status bar menu or set their order to a value greater than 0 in settings.
-
-## Regenerating the screenshots
-
-The images above are captured by driving a real VS Code instance with the
-extension loaded:
-
-```sh
-bun run screenshots
-```
-
-The script launches VS Code in an isolated profile with every metric enabled and
-writes `images/bar.png`, `images/tooltip.png`, `images/menu.png`, and
-`images/settings.png`.
-
-Requirements:
-
-- A desktop VS Code build (`code`, `code-insiders`, or `codium`) reachable via
-  `$VSCODE_BIN` or on `$PATH`. The `code` shim from a remote/vscode-server
-  install is not a desktop app and will not work.
-- The extension bundle must be built first (`bun run build`) so `out/main.js`
-  exists.
-- On headless Linux the script starts its own `Xvfb` display; installing
-  ImageMagick (`import`) lets it capture the native status bar tooltip that
-  Chromium paints outside the page.
