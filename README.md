@@ -17,9 +17,11 @@ A simple resource monitor.
 
 - CPU usage
 - Memory usage
-- Network usage
-- File system usage
+- Network usage (disabled by default)
+- File system usage (disabled by default)
 - GPU usage (disabled by default)
+- Battery level (disabled by default)
+- CPU temperature (disabled by default)
 
 Clicking on any active metric in the status bar opens a quick menu allowing you
 to toggle individual components on/off and quickly navigate to settings.
@@ -29,5 +31,6 @@ interval:
 
 ![example](images/settings.png)
 
-To enable GPU or other heavy metrics, use the status bar menu or set their order
-to a value greater than 0 in settings.
+The network, file system, GPU, battery, and temperature metrics probe the
+system more aggressively, so they are disabled by default. To enable them, use
+the status bar menu or set their order to a value greater than 0 in settings.

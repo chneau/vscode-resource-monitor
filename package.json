@@ -37,10 +37,12 @@
 	],
 	"main": "./out/main.js",
 	"scripts": {
-		"build": "esbuild ./src/main.ts --outfile=out/main.js --bundle --external:vscode --platform=node --minify",
+		"sync:package": "bun ./scripts/syncPackageJson.ts",
+		"build": "bun run sync:package && esbuild ./src/main.ts --outfile=out/main.js --bundle --external:vscode --platform=node --minify",
 		"watch": "bun run build --watch",
 		"upgrade": "bun update --latest; bun install --dev @types/vscode@1.99.0",
-		"check": "bun run --sequential --no-exit-on-error check:clean check:deno check:oxlint check:biome check:export lint",
+		"check": "bun run --sequential --no-exit-on-error check:clean check:deno check:oxlint check:biome check:package check:export lint",
+		"check:package": "bun ./scripts/syncPackageJson.ts --check",
 		"lint": "tsc --noEmit",
 		"bench": "hyperfine 'bun run benchmarks/multipleCalls.ts' 'bun run benchmarks/oneCall.ts'",
 		"publish": "bun run build && vsce publish --no-dependencies; ovsx publish --no-dependencies",
@@ -97,6 +99,16 @@
 					"type": "number",
 					"default": 0,
 					"description": "Order of the GPU usage. 0 to hide."
+				},
+				"resource-monitor.battery": {
+					"type": "number",
+					"default": 0,
+					"description": "Order of the battery level. 0 to hide."
+				},
+				"resource-monitor.temperature": {
+					"type": "number",
+					"default": 0,
+					"description": "Order of the CPU temperature. 0 to hide."
 				},
 				"resource-monitor.refresh-interval": {
 					"type": "number",

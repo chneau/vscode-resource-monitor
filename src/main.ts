@@ -1,11 +1,11 @@
 import { powerShellRelease, powerShellStart } from "systeminformation";
 import { commands, type ExtensionContext, window, workspace } from "vscode";
 import { getRefreshInterval, openConfigurationMenu } from "./configuration";
+import { metricDefinitions } from "./metricDefinitions";
 import {
 	getEnabledMetrics,
 	hasHeavyMetrics,
 	type Metric,
-	metricRegistry,
 } from "./metrics";
 
 let intervalId: NodeJS.Timeout | undefined;
@@ -58,8 +58,9 @@ const refreshMetrics = () => {
 
 export const activate = (context: ExtensionContext) => {
 	context.subscriptions.push(
-		commands.registerCommand("resource-monitor.openMenu", () =>
-			openConfigurationMenu(metricRegistry),
+		commands.registerCommand(
+			"resource-monitor.openMenu",
+			() => openConfigurationMenu(metricDefinitions),
 		),
 		workspace.onDidChangeConfiguration((e) => {
 			if (!e.affectsConfiguration("resource-monitor")) return;

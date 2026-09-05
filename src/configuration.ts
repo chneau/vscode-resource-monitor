@@ -5,15 +5,8 @@ import {
 	window,
 	workspace,
 } from "vscode";
+import type { OrderConfigurationKey } from "./metricDefinitions";
 
-const allOrderConfigurationKeys = [
-	"resource-monitor.cpu",
-	"resource-monitor.memory",
-	"resource-monitor.network",
-	"resource-monitor.file-system",
-	"resource-monitor.gpu",
-] as const;
-export type OrderConfigurationKey = (typeof allOrderConfigurationKeys)[number];
 export const getOrder = (key: OrderConfigurationKey) =>
 	workspace.getConfiguration().get<number>(key) ?? 0;
 export const getRefreshInterval = () =>
@@ -21,15 +14,18 @@ export const getRefreshInterval = () =>
 		.getConfiguration()
 		.get<number>("resource-monitor.refresh-interval") ?? 3000;
 
-// The subset of a metric definition the quick pick needs. The full registry is
-// provided by the caller (see main.ts) so this module stays free of metric logic.
+// The subset of a metric definition the quick pick needs. The full definitions
+// are provided by the caller (see main.ts) so this module stays free of
+// metric-specific data.
 type MenuMetric = {
 	key: OrderConfigurationKey;
 	label: string;
-	defaultOrder: number;
+	enableOrder: number;
 };
 
-export const openConfigurationMenu = async (metrics: readonly MenuMetric[]) => {
+export const openConfigurationMenu = async (
+	metrics: readonly MenuMetric[],
+) => {
 	const quickPick = window.createQuickPick();
 	quickPick.title = "Resource Monitor: Configure Components";
 	quickPick.placeholder =
@@ -77,7 +73,7 @@ export const openConfigurationMenu = async (metrics: readonly MenuMetric[]) => {
 			if (isSelected && currentOrder === 0) {
 				await config.update(
 					metric.key,
-					metric.defaultOrder,
+					metric.enableOrder,
 					ConfigurationTarget.Global,
 				);
 			} else if (!isSelected && currentOrder > 0) {
