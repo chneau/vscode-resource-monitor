@@ -4,7 +4,6 @@
 		"target": "ES2020",
 		"outDir": "out",
 		"lib": ["ES2020"],
-		"rootDir": "src",
 		"strict": true,
 		"noImplicitAny": true,
 		"strictNullChecks": true,
@@ -18,7 +17,8 @@
 		"incremental": true,
 		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
 		"resolveJsonModule": true,
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"types": ["node"]
 	},
-	"include": ["src/**/*"]
+	"include": ["src/**/*", "scripts/**/*"]
 }

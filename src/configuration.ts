@@ -23,9 +23,7 @@ type MenuMetric = {
 	enableOrder: number;
 };
 
-export const openConfigurationMenu = async (
-	metrics: readonly MenuMetric[],
-) => {
+export const openConfigurationMenu = async (metrics: readonly MenuMetric[]) => {
 	const quickPick = window.createQuickPick();
 	quickPick.title = "Resource Monitor: Configure Components";
 	quickPick.placeholder =

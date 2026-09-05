@@ -8,10 +8,10 @@
 // This module intentionally imports nothing from "vscode", so it can run
 // outside the extension host.
 import { readFileSync, writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import path from "node:path";
 import { metricDefinitions } from "../src/metricDefinitions";
 
-const pkgPath = fileURLToPath(new URL("../package.json", import.meta.url));
+const pkgPath = path.join(__dirname, "..", "package.json");
 const current = readFileSync(pkgPath, "utf8");
 const pkg = JSON.parse(current) as {
 	contributes: {

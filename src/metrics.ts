@@ -1,9 +1,6 @@
 import { StatusBarAlignment, type StatusBarItem, window } from "vscode";
 import { getOrder } from "./configuration";
-import {
-	metricDefinitions,
-	type MetricDefinition,
-} from "./metricDefinitions";
+import { type MetricDefinition, metricDefinitions } from "./metricDefinitions";
 
 export class Metric {
 	#getText: () => Promise<string>;
