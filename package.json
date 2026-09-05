@@ -2,7 +2,7 @@
 	"name": "resource-monitor",
 	"displayName": "Resource Monitor",
 	"description": "A simple resource monitor.",
-	"version": "2.0.23",
+	"version": "2.0.24",
 	"publisher": "chneau",
 	"license": "MIT",
 	"galleryBanner": {
@@ -56,11 +56,11 @@
 		"check:export": "ts-unused-exports tsconfig.json --excludePathsFromReport=main.ts"
 	},
 	"dependencies": {
-		"pretty-bytes": "^7.1.2",
-		"systeminformation": "^5.33.6"
+		"pretty-bytes": "^7.1.3",
+		"systeminformation": "^5.33.8"
 	},
 	"devDependencies": {
-		"@types/node": "^26.4.0",
+		"@types/node": "^26.4.1",
 		"@types/vscode": "1.99.0",
 		"@vscode/vsce": "^3.9.2",
 		"esbuild": "^0.28.2",
