@@ -4,6 +4,7 @@
 //   - images/bar.png      the status bar with every metric enabled
 //   - images/tooltip.png  the hover tooltip of the CPU metric
 //   - images/menu.png     the "Configure Components" quick pick
+//   - images/settings.png the settings page filtered to this extension
 //
 // Requirements:
 //   - A desktop VS Code build (code / code-insiders / codium) reachable via
@@ -24,6 +25,7 @@ import {
 	existsSync,
 	mkdirSync,
 	mkdtempSync,
+	readdirSync,
 	rmSync,
 	statSync,
 	writeFileSync,
@@ -62,6 +64,44 @@ function commandOnPath(name: string): string | undefined {
 	return res.status === 0 ? res.stdout.trim() : undefined;
 }
 
+// --- WSL interop ------------------------------------------------------------
+// Inside WSL we can drive the Windows VS Code install through the /mnt/c
+// mount. Windows can't read raw Linux paths, so any path handed to the Windows
+// process must be rewritten to a \\wsl.localhost\<distro>\ UNC path.
+
+function wslDistro(): string | undefined {
+	if (process.platform !== "linux") return undefined;
+	if (!process.env.WSL_DISTRO_NAME || !existsSync("/mnt/c")) return undefined;
+	return process.env.WSL_DISTRO_NAME;
+}
+
+// Windows VS Code installs (as seen through /mnt/c) on this WSL machine.
+function wslWindowsVscodeCandidates(): string[] {
+	const found: string[] = [];
+	const mount = (windowsPath: string) => {
+		const rel = windowsPath.replace(/\\/g, "/").replace(/^[A-Za-z]:/, "");
+		const mounted = `/mnt/c${rel}`;
+		if (existsSync(mounted)) found.push(mounted);
+	};
+	mount("C:\\Program Files\\Microsoft VS Code\\Code.exe");
+	mount("C:\\Program Files\\Microsoft VS Code Insiders\\Code - Insiders.exe");
+	try {
+		for (const user of readdirSync("/mnt/c/Users")) {
+			mount(
+				`C:\\Users\\${user}\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe`,
+			);
+			mount(
+				`C:\\Users\\${user}\\AppData\\Local\\Programs\\Microsoft VS Code Insiders\\Code - Insiders.exe`,
+			);
+		}
+	} catch {
+		// ignore unreadable user dirs
+	}
+	return found;
+}
+
+const needsWindowsPaths = (binary: string) => binary.startsWith("/mnt/c/");
+
 function findVscodeBinary(): string {
 	const explicit = process.env.VSCODE_BIN?.trim();
 	const candidates = explicit
@@ -97,20 +137,38 @@ function findVscodeBinary(): string {
 							"/snap/bin/code",
 						]
 					: []),
+				...(wslDistro() ? wslWindowsVscodeCandidates() : []),
 			].filter((c): c is string => Boolean(c));
 
+	// The vscode-server "code" on $PATH (e.g. inside a dev container) is a
+	// remote CLI shim, not the desktop Electron app — driving it would fail
+	// with an unhelpful "Process failed to launch!". Skip it and say so.
+	const isRemoteShim = (p: string) => /remote-cli|vscode-server/i.test(p);
+	let skippedRemoteShim = false;
 	for (const candidate of candidates) {
-		if (candidate && existsSync(candidate)) return candidate;
+		if (!candidate) continue;
+		if (isRemoteShim(candidate)) {
+			skippedRemoteShim = true;
+			continue;
+		}
+		try {
+			if (statSync(candidate).isFile()) return candidate;
+		} catch {
+			// not a regular file (missing, directory, broken link)
+		}
 	}
+	const hint = skippedRemoteShim
+		? [
+				"The only 'code' on this system is the vscode-server remote-cli shim,",
+				"which is not a desktop app and cannot be driven.",
+			]
+		: ["Could not find a desktop VS Code executable."];
 	fail(
 		[
-			"Could not find a desktop VS Code executable.",
+			...hint,
 			"Install VS Code, or point the script at it with:",
 			"",
 			"  VSCODE_BIN=/path/to/code bun run screenshots",
-			"",
-			"(The vscode-server 'remote-cli' shim found on $PATH is not a desktop",
-			"app and cannot be driven — set VSCODE_BIN to the real binary.)",
 		].join("\n"),
 	);
 }
@@ -165,6 +223,7 @@ writeFileSync(
 			"window.titleBarStyle": "native",
 			"editor.minimap.enabled": false,
 			"workbench.startupEditor": "none",
+			"security.workspace.trust.enabled": false,
 			"update.mode": "none",
 			"telemetry.telemetryLevel": "off",
 			"resource-monitor.cpu": 1,
@@ -179,22 +238,6 @@ writeFileSync(
 		"\t",
 	),
 );
-
-const launchArgs = [
-	`--user-data-dir=${userDataDir}`,
-	`--extensions-dir=${extensionsDir}`,
-	`--extensionDevelopmentPath=${projectRoot}`,
-	"--disable-telemetry",
-	"--disable-updates",
-	"--disable-crash-reporter",
-	"--disable-gpu",
-	"--skip-welcome",
-	"--skip-release-notes",
-	"--no-first-run",
-];
-if (typeof process.getuid === "function" && process.getuid() === 0) {
-	launchArgs.push("--no-sandbox");
-}
 
 // --- Helpers over the workbench DOM -----------------------------------------
 // Kept DOM-free (locator-based) so the scripts stay typecheckable under the
@@ -313,8 +356,36 @@ async function screenshotMenu(page: Page) {
 	await sleep(600); // let the checkboxes render
 	await quickPick.screenshot({ path: path.join(outDir, "menu.png") });
 	log("wrote images/menu.png");
-	await page.keyboard.press("Escape");
-	await sleep(300);
+}
+
+async function screenshotSettings(page: Page) {
+	// The quick pick is still open: its gear button opens the settings page
+	// filtered to this extension. Fall back to Ctrl+, (Settings UI) if needed.
+	const gear = page.locator(".quick-input-widget .codicon-settings-gear");
+	await gear
+		.first()
+		.click({ timeout: 5000 })
+		.catch(() => undefined);
+	let settingsVisible = await page
+		.locator(".settings-editor")
+		.waitFor({ state: "visible", timeout: 10000 })
+		.then(() => true)
+		.catch(() => false);
+	if (!settingsVisible) {
+		await page.keyboard.press("Control+,");
+		settingsVisible = await page
+			.locator(".settings-editor")
+			.waitFor({ state: "visible", timeout: 10000 })
+			.then(() => true)
+			.catch(() => false);
+	}
+	if (!settingsVisible) {
+		console.warn("  ⚠ settings page did not open; skipping settings.png");
+		return;
+	}
+	await sleep(1200); // let the search filter apply
+	await page.screenshot({ path: path.join(outDir, "settings.png") });
+	log("wrote images/settings.png");
 }
 
 // --- Run --------------------------------------------------------------------
@@ -323,11 +394,45 @@ async function main() {
 	mkdirSync(outDir, { recursive: true });
 	const executablePath = findVscodeBinary();
 	log(`VS Code: ${executablePath}`);
+	if (needsWindowsPaths(executablePath)) {
+		log("driving the Windows VS Code install via WSL interop");
+	}
 	ensureDisplay();
 	log(`output: ${outDir}`);
 
+	// When driving a Windows VS Code build from WSL, Linux paths must be
+	// rewritten to \\wsl.localhost\<distro>\ UNC paths the Windows process can
+	// read (raw /home/... or /tmp/... paths would not resolve there).
+	const toAppPath = (p: string) =>
+		needsWindowsPaths(executablePath)
+			? `//wsl.localhost/${process.env.WSL_DISTRO_NAME}/${p.replace(
+					/^\/+/,
+					"",
+				)}`
+			: p;
+
+	const launchArgs = [
+		`--user-data-dir=${toAppPath(userDataDir)}`,
+		`--extensions-dir=${toAppPath(extensionsDir)}`,
+		`--extensionDevelopmentPath=${toAppPath(projectRoot)}`,
+		"--disable-telemetry",
+		"--disable-updates",
+		"--disable-crash-reporter",
+		"--disable-gpu",
+		"--skip-welcome",
+		"--skip-release-notes",
+		"--no-first-run",
+	];
+	if (
+		!needsWindowsPaths(executablePath) &&
+		typeof process.getuid === "function" &&
+		process.getuid() === 0
+	) {
+		launchArgs.push("--no-sandbox");
+	}
+
 	// Open a readable file so the editor has content behind the menus.
-	const sampleFile = path.join(projectRoot, "README.md");
+	const sampleFile = toAppPath(path.join(projectRoot, "README.md"));
 
 	let app: ElectronApplication | undefined;
 	try {
@@ -353,10 +458,13 @@ async function main() {
 			fail("VS Code started but the workbench never appeared.");
 		}
 
-		await app.evaluate(({ BrowserWindow }) => {
-			const win = BrowserWindow.getAllWindows()[0];
-			win?.setSize(viewport.width, viewport.height);
-		});
+		await app.evaluate(
+			({ BrowserWindow }, size: { width: number; height: number }) => {
+				const win = BrowserWindow.getAllWindows()[0];
+				win?.setSize(size.width, size.height);
+			},
+			viewport,
+		);
 		await page.setViewportSize(viewport).catch(() => undefined);
 		await sleep(2000);
 
@@ -367,6 +475,7 @@ async function main() {
 		await screenshotStatusBar(page);
 		await screenshotTooltip(page);
 		await screenshotMenu(page);
+		await screenshotSettings(page);
 
 		console.log(`\n✔ Screenshots written to ${outDir}`);
 	} catch (error) {
