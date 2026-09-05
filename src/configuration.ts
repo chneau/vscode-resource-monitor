@@ -6,14 +6,14 @@ import {
 	workspace,
 } from "vscode";
 
-const AllOrderConfigurationKeys = [
+const allOrderConfigurationKeys = [
 	"resource-monitor.cpu",
 	"resource-monitor.memory",
 	"resource-monitor.network",
 	"resource-monitor.file-system",
 	"resource-monitor.gpu",
 ] as const;
-export type OrderConfigurationKey = (typeof AllOrderConfigurationKeys)[number];
+export type OrderConfigurationKey = (typeof allOrderConfigurationKeys)[number];
 export const getOrder = (key: OrderConfigurationKey) =>
 	workspace.getConfiguration().get<number>(key) ?? 0;
 export const getRefreshInterval = () =>
@@ -21,41 +21,15 @@ export const getRefreshInterval = () =>
 		.getConfiguration()
 		.get<number>("resource-monitor.refresh-interval") ?? 3000;
 
-type MetricConfigItem = {
+// The subset of a metric definition the quick pick needs. The full registry is
+// provided by the caller (see main.ts) so this module stays free of metric logic.
+type MenuMetric = {
 	key: OrderConfigurationKey;
 	label: string;
 	defaultOrder: number;
 };
 
-const metricConfigItems: MetricConfigItem[] = [
-	{
-		key: "resource-monitor.cpu",
-		label: "$(pulse) CPU Usage",
-		defaultOrder: 1,
-	},
-	{
-		key: "resource-monitor.memory",
-		label: "$(server) Memory Usage",
-		defaultOrder: 2,
-	},
-	{
-		key: "resource-monitor.network",
-		label: "$(cloud-download) Network Usage",
-		defaultOrder: 3,
-	},
-	{
-		key: "resource-monitor.file-system",
-		label: "$(log-in) File System Usage",
-		defaultOrder: 4,
-	},
-	{
-		key: "resource-monitor.gpu",
-		label: "$(zap) GPU Usage",
-		defaultOrder: 5,
-	},
-];
-
-export const openConfigurationMenu = async () => {
+export const openConfigurationMenu = async (metrics: readonly MenuMetric[]) => {
 	const quickPick = window.createQuickPick();
 	quickPick.title = "Resource Monitor: Configure Components";
 	quickPick.placeholder =
@@ -68,14 +42,16 @@ export const openConfigurationMenu = async () => {
 		},
 	];
 
-	const items = metricConfigItems.map((item) => ({
-		label: item.label,
-		description: getOrder(item.key) > 0 ? "Enabled" : "Disabled",
-		item,
+	const quickPickItems = metrics.map((metric) => ({
+		label: metric.label,
+		description: getOrder(metric.key) > 0 ? "Enabled" : "Disabled",
+		metric,
 	}));
 
-	quickPick.items = items;
-	quickPick.selectedItems = items.filter((i) => getOrder(i.item.key) > 0);
+	quickPick.items = quickPickItems;
+	quickPick.selectedItems = quickPickItems.filter(
+		(i) => getOrder(i.metric.key) > 0,
+	);
 
 	quickPick.onDidTriggerButton(async () => {
 		quickPick.hide();
@@ -88,13 +64,13 @@ export const openConfigurationMenu = async () => {
 	quickPick.onDidAccept(async () => {
 		const selectedKeys = new Set(
 			quickPick.selectedItems.map(
-				(i) => (i as (typeof items)[number]).item.key,
+				(i) => (i as (typeof quickPickItems)[number]).metric.key,
 			),
 		);
 		quickPick.hide();
 
 		const config = workspace.getConfiguration();
-		for (const metric of metricConfigItems) {
+		for (const metric of metrics) {
 			const currentOrder = getOrder(metric.key);
 			const isSelected = selectedKeys.has(metric.key);
 

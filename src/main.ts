@@ -5,7 +5,7 @@ import {
 	getEnabledMetrics,
 	hasHeavyMetrics,
 	type Metric,
-	resetCpuUsage,
+	metricRegistry,
 } from "./metrics";
 
 let intervalId: NodeJS.Timeout | undefined;
@@ -23,7 +23,7 @@ const stopPolling = () => {
 
 const startPolling = () => {
 	stopPolling();
-	resetCpuUsage();
+	if (metrics.length === 0) return;
 	const updateBarsText = async () => {
 		if (isPolling) return;
 		isPolling = true;
@@ -40,44 +40,40 @@ const startPolling = () => {
 const refreshMetrics = () => {
 	for (const metric of metrics) metric.dispose();
 	metrics = getEnabledMetrics();
+
+	if (process.platform === "win32") {
+		const hasHeavy = hasHeavyMetrics();
+		if (hasHeavy && !isPowerShellStarted) {
+			powerShellStart();
+			isPowerShellStarted = true;
+		} else if (!hasHeavy && isPowerShellStarted) {
+			powerShellRelease();
+			isPowerShellStarted = false;
+		}
+	}
+
 	if (metrics.length === 0) return;
-
-	if (
-		process.platform === "win32" &&
-		hasHeavyMetrics() &&
-		!isPowerShellStarted
-	) {
-		powerShellStart();
-		isPowerShellStarted = true;
-	}
-
-	if (window.state.focused) {
-		startPolling();
-	}
+	if (window.state.focused) startPolling();
 };
 
-workspace.onDidChangeConfiguration((e) => {
-	if (!e.affectsConfiguration("resource-monitor")) return;
-	stopPolling();
-	refreshMetrics();
-});
-
-window.onDidChangeWindowState((e) => {
-	if (e.focused) {
-		startPolling();
-	} else {
-		stopPolling();
-	}
-});
-
-export const activate = async (context?: ExtensionContext) => {
-	const cmd = commands.registerCommand(
-		"resource-monitor.openMenu",
-		openConfigurationMenu,
+export const activate = (context: ExtensionContext) => {
+	context.subscriptions.push(
+		commands.registerCommand("resource-monitor.openMenu", () =>
+			openConfigurationMenu(metricRegistry),
+		),
+		workspace.onDidChangeConfiguration((e) => {
+			if (!e.affectsConfiguration("resource-monitor")) return;
+			stopPolling();
+			refreshMetrics();
+		}),
+		window.onDidChangeWindowState((e) => {
+			if (e.focused) {
+				startPolling();
+			} else {
+				stopPolling();
+			}
+		}),
 	);
-	if (context) {
-		context.subscriptions.push(cmd);
-	}
 	refreshMetrics();
 };
 

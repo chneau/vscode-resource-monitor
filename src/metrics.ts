@@ -1,39 +1,17 @@
 import os from "node:os";
 import prettyBytes from "pretty-bytes";
-import { fsStats, graphics, networkStats } from "systeminformation";
+import {
+	currentLoad,
+	fsStats,
+	graphics,
+	networkStats,
+} from "systeminformation";
 import { StatusBarAlignment, type StatusBarItem, window } from "vscode";
 import { getOrder, type OrderConfigurationKey } from "./configuration";
 
-let prevCpuTimes: { idle: number; total: number } | null = null;
-
-const getCpuUsage = (): number => {
-	const cpus = os.cpus();
-	let idle = 0;
-	let total = 0;
-	for (const cpu of cpus) {
-		for (const type of Object.keys(cpu.times) as (keyof typeof cpu.times)[]) {
-			total += cpu.times[type];
-		}
-		idle += cpu.times.idle;
-	}
-	if (!prevCpuTimes) {
-		prevCpuTimes = { idle, total };
-		return 0;
-	}
-	const idleDiff = idle - prevCpuTimes.idle;
-	const totalDiff = total - prevCpuTimes.total;
-	prevCpuTimes = { idle, total };
-	if (totalDiff <= 0) return 0;
-	return Math.max(0, Math.min(100, (1 - idleDiff / totalDiff) * 100));
-};
-
-export const resetCpuUsage = () => {
-	prevCpuTimes = null;
-};
-
 const cpuText = async () => {
-	const load = getCpuUsage();
-	return `$(pulse)${load.toFixed(2)}%`;
+	const cl = await currentLoad();
+	return `$(pulse)${cl.currentLoad.toFixed(2)}%`;
 };
 
 const memText = async () => {
@@ -66,52 +44,87 @@ const gpuText = async () => {
 	return `$(zap)${maxUtil.toFixed(0)}% ${prettyBytes(totalMemUsed)}`;
 };
 
-type MetricCtrProps = {
-	getText: () => Promise<string>;
-	isHeavy?: boolean;
+type MetricDefinition = {
+	key: OrderConfigurationKey;
+	// Human-readable name used for tooltips and error reporting.
 	name: string;
-	section: OrderConfigurationKey;
+	// Codicon-prefixed label shown in the configuration quick pick.
+	label: string;
+	// Order assigned to the metric when it is enabled from the quick pick.
+	defaultOrder: number;
+	isHeavy: boolean;
+	getText: () => Promise<string>;
 };
+
+// Single source of truth for every metric: the status bar, the configuration
+// quick pick, and heavy-metric detection all derive from this list.
+export const metricRegistry: readonly MetricDefinition[] = [
+	{
+		key: "resource-monitor.cpu",
+		name: "CPU usage",
+		label: "$(pulse) CPU Usage",
+		defaultOrder: 1,
+		isHeavy: false,
+		getText: cpuText,
+	},
+	{
+		key: "resource-monitor.memory",
+		name: "Memory usage",
+		label: "$(server) Memory Usage",
+		defaultOrder: 2,
+		isHeavy: false,
+		getText: memText,
+	},
+	{
+		key: "resource-monitor.network",
+		name: "Network usage",
+		label: "$(cloud-download) Network Usage",
+		defaultOrder: 3,
+		isHeavy: true,
+		getText: netText,
+	},
+	{
+		key: "resource-monitor.file-system",
+		name: "File system usage",
+		label: "$(log-in) File System Usage",
+		defaultOrder: 4,
+		isHeavy: true,
+		getText: fsText,
+	},
+	{
+		key: "resource-monitor.gpu",
+		name: "GPU usage",
+		label: "$(zap) GPU Usage",
+		defaultOrder: 5,
+		isHeavy: true,
+		getText: gpuText,
+	},
+];
 
 export class Metric {
 	#getText: () => Promise<string>;
 	#name: string;
-	#section: OrderConfigurationKey;
-	#bar: StatusBarItem | null = null;
-	#disposed = false;
-	readonly isHeavy: boolean;
+	#bar: StatusBarItem | null;
 
-	constructor({ getText, isHeavy = false, name, section }: MetricCtrProps) {
+	constructor({ getText, name, key }: MetricDefinition) {
 		this.#getText = getText;
 		this.#name = name;
-		this.#section = section;
-		this.isHeavy = isHeavy;
-	}
-
-	init() {
-		const order = getOrder(this.#section);
-		if (!order) return;
-		// Allow the same instance to be reused across refreshMetrics() cycles.
-		this.#disposed = false;
-		this.#bar = newBarItem({ name: this.#name, priority: -1e3 - order });
-		this.update();
-		return this;
+		this.#bar = newBarItem({ name, priority: -1e3 - getOrder(key) });
 	}
 
 	async update() {
-		if (this.#disposed || !this.#bar) return;
+		if (!this.#bar) return;
 		try {
 			const text = await this.#getText();
-			if (this.#disposed || !this.#bar) return;
+			if (!this.#bar) return;
 			this.#bar.text = text;
 		} catch (error) {
 			console.error(`Failed to update metric ${this.#name}:`, error);
-			if (!this.#disposed && this.#bar) this.#bar.text = "$(error)";
+			if (this.#bar) this.#bar.text = "$(error)";
 		}
 	}
 
 	dispose() {
-		this.#disposed = true;
 		this.#bar?.dispose();
 		this.#bar = null;
 	}
@@ -130,42 +143,12 @@ const newBarItem = ({ name, priority }: { name: string; priority: number }) => {
 	return sbi;
 };
 
-const metrics: MetricCtrProps[] = [
-	{
-		getText: cpuText,
-		isHeavy: false,
-		name: "CPU usage",
-		section: "resource-monitor.cpu",
-	},
-	{
-		getText: memText,
-		isHeavy: false,
-		name: "Memory usage",
-		section: "resource-monitor.memory",
-	},
-	{
-		getText: netText,
-		isHeavy: true,
-		name: "Network usage",
-		section: "resource-monitor.network",
-	},
-	{
-		getText: fsText,
-		isHeavy: true,
-		name: "File system usage",
-		section: "resource-monitor.file-system",
-	},
-	{
-		getText: gpuText,
-		isHeavy: true,
-		name: "GPU usage",
-		section: "resource-monitor.gpu",
-	},
-];
-
-const allMetrics = metrics.map((x) => new Metric(x));
+// Fresh instances are built on every refresh cycle, so an in-flight update can
+// only ever observe a disposed (bar-less) metric and never a re-used one.
 export const getEnabledMetrics = () =>
-	allMetrics.map((x) => x.init()).filter((x): x is Metric => x != null);
+	metricRegistry
+		.filter((metric) => getOrder(metric.key) > 0)
+		.map((metric) => new Metric(metric));
 
 export const hasHeavyMetrics = () =>
-	metrics.some((x) => x.isHeavy && getOrder(x.section) > 0);
+	metricRegistry.some((metric) => metric.isHeavy && getOrder(metric.key) > 0);
